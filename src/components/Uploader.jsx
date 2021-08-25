@@ -20,7 +20,10 @@ export default function Uploader({ type, id }) {
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
     const handleOpen = () => setOpen(true)
-    const handleClose = () => setOpen(false)
+    const handleClose = () => {
+        setUploaded(false)
+        setOpen(false)
+    }
     const uploadImage = (file) => {
         setLoading(true)
         const imageRef = firebase
