@@ -150,7 +150,7 @@ jwtClient.authorize((error, tokens) => {
                                       res.end(JSON.stringify(data))
                                   })
                             break
-                        case 'POST':
+                        case 'POST': {
                             let temp = ''
                             req.on('data', (data) => {
                                 temp += data
@@ -165,18 +165,20 @@ jwtClient.authorize((error, tokens) => {
                                     console.error(`Bad Request`)
                                     res.statusCode = 400
                                     res.end()
+                                } else {
+                                    addUser(
+                                        body.nickname,
+                                        body.email,
+                                        body.mobile,
+                                        accessToken
+                                    ).then(() => {
+                                        res.statusCode = 200
+                                        res.end()
+                                    })
                                 }
-                                addUser(
-                                    body.nickname,
-                                    body.email,
-                                    body.mobile,
-                                    accessToken
-                                ).then(() => {
-                                    res.statusCode = 200
-                                    res.end()
-                                })
                             })
                             break
+                        }
                         default:
                     }
                     break
@@ -211,7 +213,7 @@ jwtClient.authorize((error, tokens) => {
                                       res.end(JSON.stringify(data))
                                   })
                             break
-                        case 'POST':
+                        case 'POST': {
                             let temp = ''
                             req.on('data', (data) => {
                                 temp += data
@@ -233,6 +235,7 @@ jwtClient.authorize((error, tokens) => {
                                 })
                             })
                             break
+                        }
                         default:
                     }
                     break
@@ -254,7 +257,7 @@ jwtClient.authorize((error, tokens) => {
                                 }
                             )
                             break
-                        case 'POST':
+                        case 'POST': {
                             let temp = ''
                             req.on('data', (data) => {
                                 temp += data
@@ -277,6 +280,7 @@ jwtClient.authorize((error, tokens) => {
                                 })
                             })
                             break
+                        }
                         default:
                     }
                     break
