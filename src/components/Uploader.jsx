@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 import { useEffect } from 'react'
-import firebaseConfig from '../../firebaseConfig.json'
+import firebaseConfig from '../firebaseConfig.json'
 
 export default function Uploader() {
     useEffect(() => {
@@ -8,9 +8,11 @@ export default function Uploader() {
     }, [])
 
     const uploadImage = (type, id, file) => {
-        const imageRef = firebase.storage().ref().child(`images/${type}/${id}.jpg`)
-        imageRef.put(file).then((snapshot) => {
-        })
+        const imageRef = firebase
+            .storage()
+            .ref()
+            .child(`images/${type}/${id}.jpg`)
+        imageRef.put(file).then((snapshot) => {})
     }
 
     return (
