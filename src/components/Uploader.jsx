@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 import { useEffect } from 'react'
-import firebaseConfig from '../utils/firebaseConfig.json'
+import firebaseConfig from '../../firebaseConfig.json'
 
 export default function Uploader() {
     useEffect(() => {
