@@ -25,7 +25,6 @@ SynCoder 프로젝트의 참여자는 총 4명입니다.
 
 * 조영록(0-ROK)
 * 남창균(gyunius)
-* 윤현섭(Hanungaemoya)
 * 이정주(pyville)
 
 # 튜토리얼
