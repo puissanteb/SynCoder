@@ -63,6 +63,7 @@ const addUser = (nickname, email, mobile, appKey) => {
     }
     return axios
         .post(`${baseURL}/users.json?access_token=${appKey}`, newUser)
+        .then((res) => console.log(res.data))
         .catch(console.error)
 }
 // 글 추가 API
