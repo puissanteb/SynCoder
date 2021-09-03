@@ -22,19 +22,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import { mainListItems, secondaryListItems } from '../utils/listItems'
 import styles from '../utils/useStyles'
 import Post from './Post'
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                SynCoder
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    )
-}
+import { Copyright } from '../utils/utils'
 
 const useStyles = makeStyles(styles())
 
