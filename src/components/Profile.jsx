@@ -117,7 +117,7 @@ export default function Profile({ user, setUser }) {
                 gutterBottom
             >
                 <Avatar alt={displayName} src={photoURL} />
-                이름(닉네임): {displayName}
+                이름(닉네임): {`${displayName}`}
             </Typography>
             <Typography
                 component="h2"
@@ -125,7 +125,7 @@ export default function Profile({ user, setUser }) {
                 color="primary"
                 gutterBottom
             >
-                이메일: {email}
+                이메일: {`${email}`}
             </Typography>
             <Typography
                 component="h2"
@@ -133,7 +133,7 @@ export default function Profile({ user, setUser }) {
                 color="primary"
                 gutterBottom
             >
-                전화번호: {phoneNumber}
+                전화번호: {`${phoneNumber}`}
             </Typography>
             <Button variant="contained" onClick={handleOpen}>
                 정보 수정
