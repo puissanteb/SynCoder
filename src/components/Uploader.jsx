@@ -1,6 +1,5 @@
 import firebase from 'firebase'
-import { useState, useEffect } from 'react'
-import firebaseConfig from '../firebaseConfig.json'
+import { useState } from 'react'
 import {
     Button,
     Dialog,
@@ -12,10 +11,6 @@ import {
 import '@fontsource/roboto'
 
 export default function Uploader({ type, id }) {
-    useEffect(() => {
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig)
-    }, [])
-
     const [uploaded, setUploaded] = useState(false)
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
