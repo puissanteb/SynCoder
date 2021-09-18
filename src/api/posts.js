@@ -27,7 +27,6 @@ export function getPosts() {
 }
 
 export function addPost(postData) {
-    const postsRef = firebase.database().ref(`posts`)
     const newPostKey = firebase.database().ref(`posts`).push().key
     return firebase.database().ref(`posts/${newPostKey}`).set(postData)
 }

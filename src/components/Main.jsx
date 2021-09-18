@@ -25,6 +25,7 @@ import Post from './Post'
 import Editor from './Editor'
 import { Copyright } from '../utils/utils'
 import { getPosts } from '../api/posts'
+import { TramRounded } from '@material-ui/icons'
 
 const useStyles = makeStyles(styles())
 
@@ -102,7 +103,10 @@ export default function Main() {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        <Editor />
+                        <Editor
+                            label="게시물 작성하기"
+                            placeholder="당신의 개발로그가 궁금해요"
+                        />
                         {posts.map((post) => (
                             <Post {...post} key={post.postId} />
                         ))}

@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { Container, Button, TextField, Grid, Paper } from '@material-ui/core'
 import { Create } from '@material-ui/icons'
 import { addPost } from '../api/posts'
+import { addReply } from '../api/replies'
 import firebase from 'firebase'
 
-export default function Editor() {
+export default function Editor({ label, placeholder, postId }) {
     const [content, setContent] = useState(``)
     const [loading, setLoading] = useState(false)
     const submitPost = () => {
@@ -22,6 +23,21 @@ export default function Editor() {
             })
             .catch(console.error)
     }
+    const submitReply = () => {
+        setLoading(true)
+        const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
+        addReply({
+            userId: firebase.auth().currentUser.uid,
+            postId,
+            body: content,
+            createdAt: now,
+        })
+            .then(() => {
+                setContent(``)
+                setLoading(false)
+            })
+            .catch(console.error)
+    }
     return (
         <Grid item xs={12} md={8} lg={9}>
             <Paper>
@@ -30,8 +46,8 @@ export default function Editor() {
                         <Container>
                             <TextField
                                 id="outlined-textarea"
-                                label="게시물 작성하기"
-                                placeholder="당신의 개발로그가 궁금해요"
+                                label={label}
+                                placeholder={placeholder}
                                 multiline
                                 fullWidth
                                 variant="outlined"
@@ -48,7 +64,7 @@ export default function Editor() {
                                 color="primary"
                                 startIcon={<Create />}
                                 disabled={loading}
-                                onClick={submitPost}
+                                onClick={postId ? submitReply : submitPost}
                             >
                                 글쓰기
                             </Button>
