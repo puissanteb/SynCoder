@@ -68,7 +68,7 @@ export default function Profile({ user, setUser }) {
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="displayname"
+                        id="standard-required"
                         label="이름(닉네임)"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
@@ -78,7 +78,7 @@ export default function Profile({ user, setUser }) {
                     />
                     <TextField
                         margin="dense"
-                        id="phonenumber"
+                        id="standard-required"
                         label="휴대폰 번호"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}

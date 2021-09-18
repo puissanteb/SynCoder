@@ -13,6 +13,7 @@ import {
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { makeStyles } from '@material-ui/core/styles'
 import { Copyright } from '../utils/utils'
+import { saveUserInfo } from '../api/users'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -43,7 +44,13 @@ export default function Login({ setUser }) {
             callbacks: {
                 signInSuccessWithAuthResult: (authResult) => {
                     const { user } = authResult
+                    const { uid, displayName, email } = user
                     setUser(user)
+                    saveUserInfo({
+                        userId: uid,
+                        nickname: displayName,
+                        email,
+                    })
                     ui.delete()
                     return true
                 },
