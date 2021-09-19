@@ -11,12 +11,7 @@ export default function Editor({ label, placeholder, postId }) {
     const submitPost = () => {
         setLoading(true)
         const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
-        addPost({
-            userId: firebase.auth().currentUser.uid,
-            body: content,
-            createdAt: now,
-            modifiedAt: now,
-        })
+        addPost(firebase.auth().currentUser.uid, content, now)
             .then(() => {
                 setContent(``)
                 setLoading(false)
@@ -26,12 +21,7 @@ export default function Editor({ label, placeholder, postId }) {
     const submitReply = () => {
         setLoading(true)
         const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
-        addReply({
-            userId: firebase.auth().currentUser.uid,
-            postId,
-            body: content,
-            createdAt: now,
-        })
+        addReply(firebase.auth().currentUser.uid, postId, content, now)
             .then(() => {
                 setContent(``)
                 setLoading(false)

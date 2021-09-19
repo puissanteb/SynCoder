@@ -12,24 +12,30 @@ import {
     ButtonGroup,
     Button,
 } from '@material-ui/core'
-import { getUserNickname } from '../api/users'
+import { getUserNickname, getPhotoURL } from '../api/users'
 import { getReplies } from '../api/replies'
+import { formatDate } from '../utils/utils'
 
-export default function Post({ postId, userId, body }) {
+export default function Post({ postId, userId, modifiedAt, body }) {
     const [nickname, setNickname] = useState('')
     const [replies, setReplies] = useState([])
+    const [photoURL, setPhotoURL] = useState('')
     useEffect(() => {
         Promise.all([
             getUserNickname(userId).then(setNickname).catch(console.error),
             getReplies(postId).then(setReplies).catch(console.error),
+            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
         ])
     }, [])
     return (
         <Grid item xs={12} md={8} lg={9}>
             <Paper>
                 <Container style={{ display: 'flex' }}>
-                    <Avatar></Avatar>
-                    <Title>{nickname}</Title>
+                    <Avatar alt={nickname} src={photoURL}></Avatar>
+                    <Title>
+                        {nickname}/
+                        {formatDate(new Date(modifiedAt), new Date())}
+                    </Title>
                 </Container>
                 <Container>
                     <Typography component="h3" color="secondary">

@@ -11,6 +11,9 @@ export function getPosts() {
                 for (let key in obj) {
                     arr.push({ ...obj[key], postId: key })
                 }
+                arr.sort(
+                    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                )
                 return arr
             } else {
                 return []
@@ -26,7 +29,12 @@ export function getPosts() {
     // })
 }
 
-export function addPost(postData) {
+export function addPost(userId, body, createdAt) {
     const newPostKey = firebase.database().ref(`posts`).push().key
-    return firebase.database().ref(`posts/${newPostKey}`).set(postData)
+    return firebase.database().ref(`posts/${newPostKey}`).set({
+        userId,
+        body,
+        createdAt,
+        modifiedAt: createdAt,
+    })
 }

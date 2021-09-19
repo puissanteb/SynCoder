@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 import {
     Avatar,
@@ -10,8 +10,9 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core'
+import { saveUserInfo, getUserNickname } from '../api/users'
 
-export default function Profile({ user, setUser }) {
+export default function Profile({ user }) {
     const { email } = user
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -21,26 +22,24 @@ export default function Profile({ user, setUser }) {
         updateProfile()
         setOpen(false)
     }
-    const [displayName, setDisplayName] = useState(user.displayName ?? ``)
-    const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber ?? ``)
-    const [photoURL, setPhotoURL] = useState(user.photoURL ?? ``)
-    const updateProfile = () => {
-        user.updateProfile({
-            displayName,
-            phoneNumber,
-            photoURL,
-        })
-            .then(() => console.log(`계정 정보 변경 성공`))
-            .catch(console.error)
-    }
     const signOut = () => {
-        firebase
-            .auth()
-            .signOut()
-            .then(() => {
-                setUser(null)
-            })
-            .catch(console.error)
+        firebase.auth().signOut().catch(console.error)
+    }
+    const [nickname, setNickname] = useState(``)
+    const [phoneNumber, setPhoneNumber] = useState(``)
+    useEffect(() => {
+        getUserNickname(user.uid).then(setNickname).catch(console.error)
+    }, [])
+    const updateProfile = () => {
+        saveUserInfo(
+            {
+                userId: user.uid,
+                nickname,
+                email,
+                mobile: phoneNumber,
+            },
+            false
+        )
     }
     const uploadImage = (file) => {
         setLoading(true)
@@ -50,11 +49,8 @@ export default function Profile({ user, setUser }) {
             .child(`images/temp/${user.uid}.jpg`)
         imageRef
             .put(file)
-            .then((snapshot) => snapshot.ref.getDownloadURL())
-            .then((URL) => {
-                setPhotoURL(URL)
-                setLoading(false)
-            })
+            .then(() => setLoading(false))
+            .catch(console.error)
     }
     return (
         <>
@@ -70,8 +66,8 @@ export default function Profile({ user, setUser }) {
                         margin="dense"
                         id="standard-required"
                         label="이름(닉네임)"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
                         type="text"
                         fullWidth
                         required
@@ -110,31 +106,6 @@ export default function Profile({ user, setUser }) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Typography
-                component="h2"
-                variant="h6"
-                color="primary"
-                gutterBottom
-            >
-                <Avatar alt={displayName} src={photoURL} />
-                이름(닉네임): {`${displayName}`}
-            </Typography>
-            <Typography
-                component="h2"
-                variant="h6"
-                color="primary"
-                gutterBottom
-            >
-                이메일: {`${email}`}
-            </Typography>
-            <Typography
-                component="h2"
-                variant="h6"
-                color="primary"
-                gutterBottom
-            >
-                전화번호: {`${phoneNumber}`}
-            </Typography>
             <Button variant="contained" onClick={handleOpen}>
                 정보 수정
             </Button>

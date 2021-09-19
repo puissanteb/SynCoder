@@ -30,7 +30,12 @@ export function getReplies(postId) {
     })
 }
 
-export function addReply(replyData) {
+export function addReply(userId, postId, body, createdAt) {
     const newReplyKey = firebase.database().ref(`replies`).push().key
-    return firebase.database().ref(`replies/${newReplyKey}`).set(replyData)
+    return firebase.database().ref(`replies/${newReplyKey}`).set({
+        userId,
+        postId,
+        body,
+        createdAt,
+    })
 }

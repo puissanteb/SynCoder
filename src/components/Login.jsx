@@ -35,21 +35,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Login({ setUser }) {
+export default function Login() {
     const classes = useStyles()
 
     useEffect(() => {
-        const ui = new firebaseui.auth.AuthUI(firebase.auth())
+        const ui =
+            firebaseui.auth.AuthUI.getInstance() ||
+            new firebaseui.auth.AuthUI(firebase.auth())
         ui.start('#firebaseui-auth-container', {
             callbacks: {
                 signInSuccessWithAuthResult: (authResult) => {
                     const { user } = authResult
-                    const { uid, displayName, email } = user
-                    setUser(user)
+                    const { uid, displayName, email, phoneNumber } = user
                     saveUserInfo({
                         userId: uid,
                         nickname: displayName,
                         email,
+                        mobile: phoneNumber,
                     })
                     ui.delete()
                     return true

@@ -25,11 +25,11 @@ import Post from './Post'
 import Editor from './Editor'
 import { Copyright } from '../utils/utils'
 import { getPosts } from '../api/posts'
-import { TramRounded } from '@material-ui/icons'
+import Profile from './Profile'
 
 const useStyles = makeStyles(styles())
 
-export default function Main() {
+export default function Main({ user }) {
     const classes = useStyles()
     const [open, setOpen] = useState(true)
     const [posts, setPosts] = useState([])
@@ -114,6 +114,7 @@ export default function Main() {
                     <Box pt={4}>
                         <Copyright />
                     </Box>
+                    <Profile user={user} />
                 </Container>
             </main>
         </div>

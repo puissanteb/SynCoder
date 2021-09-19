@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Main from './components/Main'
 import Login from './components/Login'
 import firebase from 'firebase'
@@ -9,13 +9,10 @@ function App() {
         ? firebase.app()
         : firebase.initializeApp(firebaseConfig)
 
-    const [user, setUser] = useState(firebase.auth().currentUser)
+    const [user, setUser] = useState(null)
+    firebase.auth().onAuthStateChanged((user) => setUser(user ?? null))
 
-    return user ? (
-        <Main user={user} setUser={setUser} />
-    ) : (
-        <Login setUser={setUser} />
-    )
+    return user ? <Main user={user} /> : <Login />
 }
 
 export default App
