@@ -38,9 +38,8 @@ export default function Main({ user }) {
     const handleDrawerClose = () => {
         setOpen(false)
     }
-    useEffect(() => {
-        getPosts().then(setPosts).catch(console.error)
-    }, [])
+    const loadPosts = () => getPosts().then(setPosts).catch(console.error)
+    useEffect(loadPosts, [])
 
     return (
         <div className={classes.root}>
@@ -102,9 +101,13 @@ export default function Main({ user }) {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        <Editor callbackFn={() => getPosts().then(setPosts)} />
+                        <Editor callbackFn={loadPosts} />
                         {posts.map((post) => (
-                            <Post {...post} key={post.postId} />
+                            <Post
+                                {...post}
+                                callbackFn={loadPosts}
+                                key={post.postId}
+                            />
                         ))}
                     </Grid>
                     <Box pt={4}>

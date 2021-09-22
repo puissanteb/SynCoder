@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { getLikes, addLike, cancelLike } from '../api/likes'
+import { deletePost } from '../api/posts'
 import {
     Typography,
     Dialog,
     DialogTitle,
     List,
     Checkbox,
+    IconButton,
 } from '@material-ui/core'
-import { Favorite, FavoriteBorder } from '@material-ui/icons'
+import { Favorite, FavoriteBorder, Delete } from '@material-ui/icons'
 import LikeListItem from './LikeListItem'
 import firebase from 'firebase'
 
-export default function Likes({ postId }) {
+export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
     const [myLike, setMyLike] = useState(false)
     const [likes, setLikes] = useState([])
     const [open, setOpen] = useState(false)
     const handleClickOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
+    const loadLikes = () => getLikes(postId).then(setLikes).catch(console.error)
     const submitLike = () => {
         myLike
             ? cancelLike(firebase.auth().currentUser.uid, postId)
@@ -28,11 +31,10 @@ export default function Likes({ postId }) {
                   .then(setLikes)
                   .catch(console.error)
     }
-
-    useEffect(() => {
-        getLikes(postId).then(setLikes).catch(console.error)
-    }, [])
-
+    const submitDelete = () => {
+        deletePost(postId).then(callbackFn).catch(console.error)
+    }
+    useEffect(loadLikes, [])
     useEffect(() => {
         setMyLike(
             likes.filter(
@@ -64,6 +66,13 @@ export default function Likes({ postId }) {
                 checked={myLike}
                 onChange={submitLike}
             />
+            {authorId === firebase.auth().currentUser.uid ? (
+                <IconButton aria-label="delete" onClick={submitDelete}>
+                    <Delete />
+                </IconButton>
+            ) : (
+                <></>
+            )}
         </>
     )
 }

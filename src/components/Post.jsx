@@ -5,22 +5,23 @@ import Title from './Title'
 import Reply from './Reply'
 import Editor from './Editor'
 import Likes from './Likes'
-import { ThumbUp, Comment, Share } from '@material-ui/icons'
-import {
-    Typography,
-    Avatar,
-    Container,
-    ButtonGroup,
-    Button,
-} from '@material-ui/core'
+import { Typography, Avatar, Container } from '@material-ui/core'
 import { getUserNickname, getPhotoURL } from '../api/users'
 import { getReplies } from '../api/replies'
 import { formatDate } from '../utils/utils'
 
-export default function Post({ postId, userId, modifiedAt, body }) {
+export default function Post({
+    postId,
+    userId,
+    modifiedAt,
+    body,
+    callbackFn = (f) => f,
+}) {
     const [nickname, setNickname] = useState('')
     const [replies, setReplies] = useState([])
     const [photoURL, setPhotoURL] = useState('')
+    const loadReplies = () =>
+        getReplies(postId).then(setReplies).catch(console.error)
     useEffect(() => {
         Promise.all([
             getUserNickname(userId).then(setNickname).catch(console.error),
@@ -44,17 +45,25 @@ export default function Post({ postId, userId, modifiedAt, body }) {
                     </Typography>
                 </Container>
                 <Container>
-                    <Likes postId={postId} />
+                    <Likes
+                        postId={postId}
+                        authorId={userId}
+                        callbackFn={callbackFn}
+                    />
                 </Container>
                 <Container>
                     {replies.map((reply) => (
-                        <Reply {...reply} key={reply.replyId} />
+                        <Reply
+                            {...reply}
+                            callbackFn={loadReplies}
+                            key={reply.replyId}
+                        />
                     ))}
                     <Editor
                         label="댓글 작성하기"
                         placeholder="댓글을 남겨주세요"
                         postId={postId}
-                        callbackFn={() => getReplies(postId).then(setReplies)}
+                        callbackFn={loadReplies}
                     />
                 </Container>
             </Paper>
