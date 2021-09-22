@@ -8,7 +8,6 @@ import {
     CssBaseline,
     Box,
     Container,
-    Link,
 } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { makeStyles } from '@material-ui/core/styles'
@@ -35,22 +34,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Login({ setUser }) {
+export default function Login() {
     const classes = useStyles()
 
     useEffect(() => {
-        const ui = new firebaseui.auth.AuthUI(firebase.auth())
+        const ui =
+            firebaseui.auth.AuthUI.getInstance() ||
+            new firebaseui.auth.AuthUI(firebase.auth())
         ui.start('#firebaseui-auth-container', {
             callbacks: {
                 signInSuccessWithAuthResult: (authResult) => {
                     const { user } = authResult
-                    const { uid, displayName, email } = user
-                    setUser(user)
-                    saveUserInfo({
-                        userId: uid,
-                        nickname: displayName,
-                        email,
-                    })
+                    const { uid, displayName, email, phoneNumber } = user
+                    saveUserInfo(
+                        {
+                            userId: uid,
+                            nickname: displayName,
+                            email,
+                            mobile: phoneNumber,
+                        },
+                        true
+                    )
                     ui.delete()
                     return true
                 },

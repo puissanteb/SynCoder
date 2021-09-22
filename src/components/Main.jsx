@@ -14,7 +14,6 @@ import {
     Badge,
     Container,
     Grid,
-    Link,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -25,10 +24,11 @@ import Post from './Post'
 import Editor from './Editor'
 import { Copyright } from '../utils/utils'
 import { getPosts } from '../api/posts'
+import Profile from './Profile'
 
 const useStyles = makeStyles(styles())
 
-export default function Main() {
+export default function Main({ user }) {
     const classes = useStyles()
     const [open, setOpen] = useState(true)
     const [posts, setPosts] = useState([])
@@ -38,9 +38,8 @@ export default function Main() {
     const handleDrawerClose = () => {
         setOpen(false)
     }
-    useEffect(() => {
-        getPosts().then(setPosts).catch(console.error)
-    }, [])
+    const loadPosts = () => getPosts().then(setPosts).catch(console.error)
+    useEffect(loadPosts, [])
 
     return (
         <div className={classes.root}>
@@ -102,14 +101,19 @@ export default function Main() {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        <Editor />
+                        <Editor callbackFn={loadPosts} />
                         {posts.map((post) => (
-                            <Post {...post} key={post.postId} />
+                            <Post
+                                {...post}
+                                callbackFn={loadPosts}
+                                key={post.postId}
+                            />
                         ))}
                     </Grid>
                     <Box pt={4}>
                         <Copyright />
                     </Box>
+                    <Profile user={user} />
                 </Container>
             </main>
         </div>

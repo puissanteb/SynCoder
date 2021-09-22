@@ -1,22 +1,25 @@
 import firebase from 'firebase'
 
-export function getPosts() {
+export async function getPosts() {
     const postsRef = firebase.database().ref(`posts`)
-    return postsRef
-        .get()
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                const obj = snapshot.val()
-                const arr = []
-                for (let key in obj) {
-                    arr.push({ ...obj[key], postId: key })
-                }
-                return arr
-            } else {
-                return []
+    try {
+        const snapshot = await postsRef.get()
+        if (snapshot.exists()) {
+            const obj = snapshot.val()
+            const arr = []
+            for (let key in obj) {
+                arr.push({ ...obj[key], postId: key })
             }
-        })
-        .catch(console.error)
+            arr.sort(
+                (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+            )
+            return arr
+        } else {
+            return []
+        }
+    } catch (message) {
+        return console.error(message)
+    }
     // postsRef.on('child_added', (snapshot) => {
     //     if (snapshot.exists()) {
     //         console.log(snapshot.val())
@@ -26,8 +29,21 @@ export function getPosts() {
     // })
 }
 
-export function addPost(postData) {
-    const postsRef = firebase.database().ref(`posts`)
+export function addPost(userId, body) {
+    const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
     const newPostKey = firebase.database().ref(`posts`).push().key
-    return firebase.database().ref(`posts/${newPostKey}`).set(postData)
+    return firebase.database().ref(`posts/${newPostKey}`).set({
+        userId,
+        body,
+        createdAt: now,
+        modifiedAt: now,
+    })
+}
+
+export async function deletePost(postId) {
+    try {
+        return firebase.database().ref(`posts/${postId}`).remove()
+    } catch (message) {
+        return console.error(message)
+    }
 }
