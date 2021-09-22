@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import Title from './Title'
 import Reply from './Reply'
 import Editor from './Editor'
+import Likes from './Likes'
 import { ThumbUp, Comment, Share } from '@material-ui/icons'
 import {
     Typography,
@@ -43,25 +44,7 @@ export default function Post({ postId, userId, modifiedAt, body }) {
                     </Typography>
                 </Container>
                 <Container>
-                    <ButtonGroup>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<ThumbUp />}
-                        >
-                            like
-                        </Button>
-                        <Button variant="contained" startIcon={<Comment />}>
-                            comment
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<Share />}
-                        >
-                            share
-                        </Button>
-                    </ButtonGroup>
+                    <Likes postId={postId} />
                 </Container>
                 <Container>
                     {replies.map((reply) => (
@@ -71,6 +54,7 @@ export default function Post({ postId, userId, modifiedAt, body }) {
                         label="댓글 작성하기"
                         placeholder="댓글을 남겨주세요"
                         postId={postId}
+                        callbackFn={() => getReplies(postId).then(setReplies)}
                     />
                 </Container>
             </Paper>

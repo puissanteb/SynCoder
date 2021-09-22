@@ -30,12 +30,21 @@ export function getReplies(postId) {
     })
 }
 
-export function addReply(userId, postId, body, createdAt) {
+export function addReply(userId, postId, body) {
+    const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
     const newReplyKey = firebase.database().ref(`replies`).push().key
     return firebase.database().ref(`replies/${newReplyKey}`).set({
         userId,
         postId,
         body,
-        createdAt,
+        createdAt: now,
     })
+}
+
+export async function deleteReply(replyId) {
+    try {
+        return firebase.database().ref(`replies/${replyId}`).remove()
+    } catch (message) {
+        return console.error(message)
+    }
 }

@@ -23,14 +23,12 @@ export const formatDate = (inputDate, now) => {
             ? ''
             : `${inputDate.getFullYear()}년 `
 
-    const date = today
-        ? ''
-        : `${inputDate.getMonth() + 1}월 ${inputDate.getDate()}일 `
+    const date = `${inputDate.getMonth() + 1}월 ${inputDate.getDate()}일`
 
     const time = today
         ? compareTime(inputDate, now)
         : `${inputDate.getHours()}시 ${inputDate.getMinutes()}분`
-    return `${year}${date}${time}`
+    return today ? `${time}` : `${year}${date}`
 }
 
 const compareTime = (a, b) => {

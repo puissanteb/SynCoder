@@ -5,27 +5,32 @@ import { addPost } from '../api/posts'
 import { addReply } from '../api/replies'
 import firebase from 'firebase'
 
-export default function Editor({ label, placeholder, postId }) {
+export default function Editor({
+    label = '게시물 작성하기',
+    placeholder = '당신의 개발로그가 궁금해요',
+    postId,
+    callbackFn = (f) => f,
+}) {
     const [content, setContent] = useState(``)
     const [loading, setLoading] = useState(false)
     const submitPost = () => {
         setLoading(true)
-        const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
-        addPost(firebase.auth().currentUser.uid, content, now)
+        addPost(firebase.auth().currentUser.uid, content)
             .then(() => {
                 setContent(``)
                 setLoading(false)
             })
+            .then(callbackFn)
             .catch(console.error)
     }
     const submitReply = () => {
         setLoading(true)
-        const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
-        addReply(firebase.auth().currentUser.uid, postId, content, now)
+        addReply(firebase.auth().currentUser.uid, postId, content)
             .then(() => {
                 setContent(``)
                 setLoading(false)
             })
+            .then(callbackFn)
             .catch(console.error)
     }
     return (

@@ -8,7 +8,6 @@ import {
     CssBaseline,
     Box,
     Container,
-    Link,
 } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { makeStyles } from '@material-ui/core/styles'
@@ -47,12 +46,15 @@ export default function Login() {
                 signInSuccessWithAuthResult: (authResult) => {
                     const { user } = authResult
                     const { uid, displayName, email, phoneNumber } = user
-                    saveUserInfo({
-                        userId: uid,
-                        nickname: displayName,
-                        email,
-                        mobile: phoneNumber,
-                    })
+                    saveUserInfo(
+                        {
+                            userId: uid,
+                            nickname: displayName,
+                            email,
+                            mobile: phoneNumber,
+                        },
+                        true
+                    )
                     ui.delete()
                     return true
                 },

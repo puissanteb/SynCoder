@@ -14,7 +14,6 @@ import {
     Badge,
     Container,
     Grid,
-    Link,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -103,10 +102,7 @@ export default function Main({ user }) {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        <Editor
-                            label="게시물 작성하기"
-                            placeholder="당신의 개발로그가 궁금해요"
-                        />
+                        <Editor callbackFn={() => getPosts().then(setPosts)} />
                         {posts.map((post) => (
                             <Post {...post} key={post.postId} />
                         ))}

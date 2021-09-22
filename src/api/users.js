@@ -14,16 +14,13 @@ export async function getUserNickname(userId) {
     }
 }
 
-export function saveUserInfo(
-    { userId, nickname, email, mobile },
-    isSignIn = false
-) {
+export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
     const usersRef = firebase.database().ref(`users/${userId}`)
     usersRef
         .get()
         .then()
         .then((snapshot) => {
-            if (!isSignIn || snapshot.exists()) {
+            if (!isSignIn || !snapshot.exists()) {
                 usersRef.set({
                     nickname,
                     email,
