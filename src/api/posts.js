@@ -1,4 +1,5 @@
 import firebase from 'firebase'
+import { getFollowsByUserId } from './follows'
 
 export async function getPosts() {
     const postsRef = firebase.database().ref(`posts`)
@@ -27,6 +28,32 @@ export async function getPosts() {
     //         console.log('No data available')
     //     }
     // })
+}
+
+export async function getPostsByUserId(userId) {
+    const postsRef = firebase.database().ref(`posts`)
+    const followsArr = await getFollowsByUserId(userId)
+    try {
+        const snapshot = await postsRef.get()
+        if (snapshot.exists()) {
+            const obj = snapshot.val()
+            const arr = []
+            for (let key in obj) {
+                arr.push({ ...obj[key], postId: key })
+            }
+            arr.sort(
+                (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+            )
+            return arr.filter(
+                (post) =>
+                    post.userId === userId || followsArr.includes(post.userId)
+            )
+        } else {
+            return []
+        }
+    } catch (message) {
+        return console.error(message)
+    }
 }
 
 export function addPost(userId, body) {

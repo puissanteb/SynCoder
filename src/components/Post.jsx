@@ -40,9 +40,7 @@ export default function Post({
                     </Title>
                 </Container>
                 <Container>
-                    <Typography component="h3" color="secondary">
-                        {body}
-                    </Typography>
+                    <Typography component="h3">{body}</Typography>
                 </Container>
                 <Container>
                     <Likes

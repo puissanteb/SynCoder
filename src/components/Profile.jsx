@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 import {
-    Avatar,
     Button,
     Dialog,
     DialogTitle,
     DialogActions,
     DialogContent,
     TextField,
-    Typography,
+    ListSubheader,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
 } from '@material-ui/core'
+import { Settings, Lock } from '@material-ui/icons'
 import { saveUserInfo, getUserNickname } from '../api/users'
 
 export default function Profile({ user }) {
@@ -106,12 +109,21 @@ export default function Profile({ user }) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Button variant="contained" onClick={handleOpen}>
-                정보 수정
-            </Button>
-            <Button variant="contained" onClick={signOut}>
-                로그아웃
-            </Button>
+            <div>
+                <ListSubheader inset>설정</ListSubheader>
+                <ListItem button onClick={handleOpen}>
+                    <ListItemIcon>
+                        <Settings />
+                    </ListItemIcon>
+                    <ListItemText primary="정보 수정" />
+                </ListItem>
+                <ListItem button onClick={signOut}>
+                    <ListItemIcon>
+                        <Lock />
+                    </ListItemIcon>
+                    <ListItemText primary="로그아웃" />
+                </ListItem>
+            </div>
         </>
     )
 }

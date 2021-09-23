@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getLikes, addLike, cancelLike } from '../api/likes'
 import { deletePost } from '../api/posts'
+import { getFollowsByRelations, followUser, unfollowUser } from '../api/follows'
 import {
     Typography,
     Dialog,
@@ -9,17 +10,28 @@ import {
     Checkbox,
     IconButton,
 } from '@material-ui/core'
-import { Favorite, FavoriteBorder, Delete } from '@material-ui/icons'
+import {
+    Favorite,
+    FavoriteBorder,
+    Add,
+    Delete,
+    Check,
+} from '@material-ui/icons'
 import LikeListItem from './LikeListItem'
 import firebase from 'firebase'
 
 export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
     const [myLike, setMyLike] = useState(false)
+    const [myFollow, setMyFollow] = useState(false)
     const [likes, setLikes] = useState([])
     const [open, setOpen] = useState(false)
     const handleClickOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
     const loadLikes = () => getLikes(postId).then(setLikes).catch(console.error)
+    const loadFollows = () =>
+        getFollowsByRelations(firebase.auth().currentUser.uid, authorId)
+            .then(setMyFollow)
+            .catch(console.error)
     const submitLike = () => {
         myLike
             ? cancelLike(firebase.auth().currentUser.uid, postId)
@@ -31,10 +43,20 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
                   .then(setLikes)
                   .catch(console.error)
     }
+    const submitFollow = () => {
+        myFollow
+            ? unfollowUser(firebase.auth().currentUser.uid, authorId)
+                  .then(() => setMyFollow(false))
+                  .catch(console.error)
+            : followUser(firebase.auth().currentUser.uid, authorId)
+                  .then(() => setMyFollow(true))
+                  .catch(console.error)
+    }
     const submitDelete = () => {
         deletePost(postId).then(callbackFn).catch(console.error)
     }
     useEffect(loadLikes, [])
+    useEffect(loadFollows, [])
     useEffect(() => {
         setMyLike(
             likes.filter(
@@ -71,7 +93,9 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
                     <Delete />
                 </IconButton>
             ) : (
-                <></>
+                <IconButton aria-label="follow" onClick={submitFollow}>
+                    {myFollow ? <Check /> : <Add />}
+                </IconButton>
             )}
         </>
     )

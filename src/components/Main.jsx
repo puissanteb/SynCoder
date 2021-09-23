@@ -13,33 +13,25 @@ import {
     IconButton,
     Badge,
     Container,
-    Grid,
 } from '@material-ui/core'
-import MenuIcon from '@material-ui/icons/Menu'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import NotificationsIcon from '@material-ui/icons/Notifications'
-import { mainListItems, secondaryListItems } from '../utils/listItems'
+import { Menu, ChevronLeft, Notifications } from '@material-ui/icons'
+import { mainListItems } from '../utils/listItems'
 import styles from '../utils/useStyles'
-import Post from './Post'
-import Editor from './Editor'
 import { Copyright } from '../utils/utils'
-import { getPosts } from '../api/posts'
 import Profile from './Profile'
+import Timeline from './Timeline'
 
 const useStyles = makeStyles(styles())
 
 export default function Main({ user }) {
     const classes = useStyles()
     const [open, setOpen] = useState(true)
-    const [posts, setPosts] = useState([])
     const handleDrawerOpen = () => {
         setOpen(true)
     }
     const handleDrawerClose = () => {
         setOpen(false)
     }
-    const loadPosts = () => getPosts().then(setPosts).catch(console.error)
-    useEffect(loadPosts, [])
 
     return (
         <div className={classes.root}>
@@ -59,7 +51,7 @@ export default function Main({ user }) {
                             open && classes.menuButtonHidden
                         )}
                     >
-                        <MenuIcon />
+                        <Menu />
                     </IconButton>
                     <Typography
                         component="h1"
@@ -72,7 +64,7 @@ export default function Main({ user }) {
                     </Typography>
                     <IconButton color="inherit">
                         <Badge badgeContent={4} color="secondary">
-                            <NotificationsIcon />
+                            <Notifications />
                         </Badge>
                     </IconButton>
                 </Toolbar>
@@ -89,31 +81,25 @@ export default function Main({ user }) {
             >
                 <div className={classes.toolbarIcon}>
                     <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
+                        <ChevronLeft />
                     </IconButton>
                 </div>
                 <Divider />
                 <List>{mainListItems}</List>
                 <Divider />
-                <List>{secondaryListItems}</List>
+                <List>
+                    <Profile user={user} />
+                </List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={3}>
-                        <Editor callbackFn={loadPosts} />
-                        {posts.map((post) => (
-                            <Post
-                                {...post}
-                                callbackFn={loadPosts}
-                                key={post.postId}
-                            />
-                        ))}
-                    </Grid>
+                    <Timeline />
+                </Container>
+                <Container maxWidth="lg" className={classes.container}>
                     <Box pt={4}>
                         <Copyright />
                     </Box>
-                    <Profile user={user} />
                 </Container>
             </main>
         </div>
