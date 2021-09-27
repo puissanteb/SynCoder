@@ -21,7 +21,7 @@ import {
     Delete,
     Check,
 } from '@material-ui/icons'
-import LikeListItem from './LikeListItem'
+import UserListItem from './UserListItem'
 import firebase from 'firebase'
 
 export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
@@ -75,7 +75,7 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
                 <DialogTitle>좋아요를 누른 사람</DialogTitle>
                 <List sx={{ pt: 0 }}>
                     {likes.map(({ userId }) => (
-                        <LikeListItem userId={userId} key={userId} />
+                        <UserListItem userId={userId} key={userId} />
                     ))}
                 </List>
             </Dialog>

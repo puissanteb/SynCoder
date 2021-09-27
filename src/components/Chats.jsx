@@ -13,13 +13,39 @@ import {
     TextField,
 } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/core/styles'
 import Chatroom from './chats/Chatroom'
 import ChatroomListItem from './chats/ChatroomListItem'
 import { addChatroom } from '../api/chatrooms'
 import { getChatroomsByUserId } from '../api/members'
 import firebase from 'firebase'
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        height: '100vh',
+    },
+    grid: {
+        height: '100vh',
+    },
+    paperLeft: {
+        height: '90%',
+    },
+    paperTop: {
+        height: '20%',
+    },
+    paperMain: {
+        height: '90%',
+    },
+    paperRight: {},
+    paperBottom: { height: '20%' },
+    paper: {
+        padding: theme.spacing(1),
+        textAlign: 'center',
+    },
+}))
+
 export default function Chats() {
+    const classes = useStyles()
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [selectedChatroomId, setSelectedChatroomId] = useState(null)
     const [open, setOpen] = useState(false)
@@ -35,6 +61,7 @@ export default function Chats() {
     const loadChatrooms = () => {
         getChatroomsByUserId(firebase.auth().currentUser?.uid)
             .then(setChatrooms)
+            .then(() => handleListItemClick(null, null))
             .catch(console.error)
     }
     const submitChatroom = () => {
@@ -77,8 +104,8 @@ export default function Chats() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Paper>
-                <Grid container item spacing={3}>
+            <Paper className={`${classes.paperMain} ${classes.paper}`}>
+                <Grid container item spacing={3} className={classes.grid}>
                     <Grid item xs={4}>
                         <Box
                             sx={{
@@ -130,7 +157,10 @@ export default function Chats() {
                     </Grid>
                     <Grid item xs={8}>
                         {selectedChatroomId ? (
-                            <Chatroom chatroomId={selectedChatroomId} />
+                            <Chatroom
+                                chatroomId={selectedChatroomId}
+                                callbackFn={loadChatrooms}
+                            />
                         ) : (
                             <></>
                         )}

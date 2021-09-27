@@ -7,7 +7,11 @@ import {
     Avatar,
 } from '@material-ui/core'
 
-export default function LikeListItem({ userId }) {
+export default function UserListItem({
+    userId,
+    button = false,
+    callbackFn = (f) => f,
+}) {
     const [nickname, setNickname] = useState('')
     const [photoURL, setPhotoURL] = useState('')
     useEffect(() => {
@@ -17,7 +21,7 @@ export default function LikeListItem({ userId }) {
         ])
     }, [])
     return (
-        <ListItem>
+        <ListItem button={button} onClick={callbackFn}>
             <ListItemAvatar>
                 <Avatar src={photoURL}></Avatar>
             </ListItemAvatar>

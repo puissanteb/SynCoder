@@ -26,7 +26,7 @@ export const TextInput = ({ chatroomId }) => {
     const classes = useStyles()
     const [body, setBody] = useState(``)
     const submitMessage = () =>
-        addMessage(firebase.auth().currentUser.uid, chatroomId, body)
+        addMessage(firebase.auth().currentUser?.uid, chatroomId, body)
             .then(() => setBody(``))
             .catch(console.error())
     return (

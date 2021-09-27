@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Paper, Grid, Button } from '@material-ui/core'
-import { Add, ExitToApp } from '@material-ui/icons'
+import {
+    Paper,
+    Grid,
+    Button,
+    Dialog,
+    DialogTitle,
+    List,
+} from '@material-ui/core'
+import { Group, Add, ExitToApp } from '@material-ui/icons'
 import { TextInput } from './TextInput'
 import { MessageLeft, MessageRight } from './Message'
+import {
+    inviteMember,
+    kickMember,
+    getMembersByChatroomId,
+} from '../../api/members'
 import { getMessagesByChatroomId } from '../../api/messages'
+import { getFollowsByUserId } from '../../api/follows'
+import UserListItem from '../misc/UserListItem'
 import firebase from 'firebase'
 
 const useStyles = makeStyles((theme) =>
@@ -43,24 +57,87 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-export default function Chatroom({ chatroomId }) {
+export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
     const classes = useStyles()
+    const [addMemberOpen, setAddMemberOpen] = useState(false)
+    const [currentMemberOpen, setCurrentMemberOpen] = useState(false)
+    const openAddMemberDialog = () => setAddMemberOpen(true)
+    const openCurrentMemberDialog = () => setCurrentMemberOpen(true)
+    const closeAddMemberDialog = () => setAddMemberOpen(false)
+    const closeCurrentMemberDialog = () => setCurrentMemberOpen(false)
     const [messages, setMessages] = useState([])
-    const loadMessages = () =>
-        getMessagesByChatroomId(chatroomId)
-            .then(setMessages)
+    const [members, setMembers] = useState([])
+    const [friends, setFriends] = useState([])
+    const loadMessages = () => {
+        const messagesRef = firebase.database().ref(`messages`)
+        const listener = messagesRef.on(
+            'value',
+            (snapshot) => {
+                if (snapshot.exists()) {
+                    const obj = snapshot.val()
+                    const arr = []
+                    for (let key in obj) {
+                        if (obj[key].chatroomId === chatroomId)
+                            arr.push({ ...obj[key], messageId: key })
+                    }
+                    setMessages(arr)
+                }
+            },
+            (error) => console.error(error)
+        )
+        return () => messagesRef.off('value', listener)
+    }
+    const loadMembers = () =>
+        getMembersByChatroomId(chatroomId).then(setMembers).catch(console.error)
+    const loadFriends = () =>
+        getFollowsByUserId(firebase.auth().currentUser?.uid)
+            .then(setFriends)
+            .catch(console.error)
+    const submitInvite = (userId) =>
+        inviteMember(userId, chatroomId)
+            .then(loadMembers)
+            .then(closeAddMemberDialog)
+            .catch(console.error)
+    const submitKick = () =>
+        kickMember(firebase.auth().currentUser?.uid, chatroomId)
+            .then(callbackFn)
             .catch(console.error)
     useEffect(loadMessages, [])
+    useEffect(loadMembers, [])
+    useEffect(loadFriends, [])
     return (
         <>
+            <Dialog onClose={closeCurrentMemberDialog} open={currentMemberOpen}>
+                <DialogTitle>현재 인원</DialogTitle>
+                <List sx={{ pt: 0 }}>
+                    {members.map((userId) => (
+                        <UserListItem userId={userId} key={userId} />
+                    ))}
+                </List>
+            </Dialog>
+            <Dialog onClose={closeAddMemberDialog} open={addMemberOpen}>
+                <DialogTitle>초대할 친구</DialogTitle>
+                <List sx={{ pt: 0 }}>
+                    {friends
+                        .filter((friendId) => !members.includes(friendId))
+                        .map((userId) => (
+                            <UserListItem
+                                userId={userId}
+                                key={userId}
+                                button={true}
+                                callbackFn={() => submitInvite(userId)}
+                            />
+                        ))}
+                </List>
+            </Dialog>
             <Paper id="style-1" className={classes.messagesBody}>
-                {messages.map((message) => {
-                    message.userId === firebase.auth().currentUser.uid ? (
+                {messages.map((message) =>
+                    message.userId === firebase.auth().currentUser?.uid ? (
                         <MessageRight {...message} key={message.messageId} />
                     ) : (
                         <MessageLeft {...message} key={message.messageId} />
                     )
-                })}
+                )}
             </Paper>
             <TextInput chatroomId={chatroomId} />
             <Grid
@@ -69,13 +146,30 @@ export default function Chatroom({ chatroomId }) {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6}>
-                    <Button variant="contained" startIcon={<Add />}>
+                <Grid item xs={4}>
+                    <Button
+                        variant="contained"
+                        startIcon={<Group />}
+                        onClick={openCurrentMemberDialog}
+                    >
+                        현재 인원
+                    </Button>
+                </Grid>
+                <Grid item xs={4}>
+                    <Button
+                        variant="contained"
+                        startIcon={<Add />}
+                        onClick={openAddMemberDialog}
+                    >
                         친구 초대
                     </Button>
                 </Grid>
-                <Grid item xs={6}>
-                    <Button variant="contained" startIcon={<ExitToApp />}>
+                <Grid item xs={4}>
+                    <Button
+                        variant="contained"
+                        startIcon={<ExitToApp />}
+                        onClick={submitKick}
+                    >
                         나가기
                     </Button>
                 </Grid>
