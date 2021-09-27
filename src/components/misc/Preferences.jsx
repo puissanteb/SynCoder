@@ -19,6 +19,8 @@ export default function Preferences({ user }) {
     const { email } = user
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [nickname, setNickname] = useState(``)
+    const [phoneNumber, setPhoneNumber] = useState(``)
     const handleOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
     const saveChanges = () => {
@@ -28,8 +30,6 @@ export default function Preferences({ user }) {
     const signOut = () => {
         firebase.auth().signOut().catch(console.error)
     }
-    const [nickname, setNickname] = useState(``)
-    const [phoneNumber, setPhoneNumber] = useState(``)
     useEffect(() => {
         getUserNickname(user.uid).then(setNickname).catch(console.error)
     }, [])
@@ -103,7 +103,7 @@ export default function Preferences({ user }) {
                     <Button
                         onClick={saveChanges}
                         color="primary"
-                        disabled={loading}
+                        disabled={loading || !nickname || !phoneNumber}
                     >
                         확인
                     </Button>

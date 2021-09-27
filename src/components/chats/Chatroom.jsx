@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Paper } from '@material-ui/core'
+import { Paper, Grid, Button } from '@material-ui/core'
+import { Add, ExitToApp } from '@material-ui/icons'
 import { TextInput } from './TextInput'
 import { MessageLeft, MessageRight } from './Message'
+import { getMessagesByChatroomId } from '../../api/messages'
+import firebase from 'firebase'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -40,43 +43,43 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-export default function Chatroom() {
+export default function Chatroom({ chatroomId }) {
     const classes = useStyles()
+    const [messages, setMessages] = useState([])
+    const loadMessages = () =>
+        getMessagesByChatroomId(chatroomId)
+            .then(setMessages)
+            .catch(console.error)
+    useEffect(loadMessages, [])
     return (
-        <div className={classes.container}>
-            <Paper className={classes.paper} zDepth={2}>
-                <Paper id="style-1" className={classes.messagesBody}>
-                    <MessageLeft
-                        message="あめんぼあかいなあいうえお"
-                        timestamp="MM/DD 00:00"
-                        photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
-                        displayName=""
-                        avatarDisp={true}
-                    />
-                    <MessageLeft
-                        message="xxxxxhttps://yahoo.co.jp xxxxxxxxxあめんぼあかいなあいうえおあいうえおかきくけこさぼあかいなあいうえおあいうえおかきくけこさぼあかいなあいうえおあいうえおかきくけこさいすせそ"
-                        timestamp="MM/DD 00:00"
-                        photoURL=""
-                        displayName="テスト"
-                        avatarDisp={false}
-                    />
-                    <MessageRight
-                        message="messageRあめんぼあかいなあいうえおあめんぼあかいなあいうえおあめんぼあかいなあいうえお"
-                        timestamp="MM/DD 00:00"
-                        photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
-                        displayName="まさりぶ"
-                        avatarDisp={true}
-                    />
-                    <MessageRight
-                        message="messageRあめんぼあかいなあいうえおあめんぼあかいなあいうえお"
-                        timestamp="MM/DD 00:00"
-                        photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
-                        displayName="まさりぶ"
-                        avatarDisp={false}
-                    />
-                </Paper>
-                <TextInput />
+        <>
+            <Paper id="style-1" className={classes.messagesBody}>
+                {messages.map((message) => {
+                    message.userId === firebase.auth().currentUser.uid ? (
+                        <MessageRight {...message} key={message.messageId} />
+                    ) : (
+                        <MessageLeft {...message} key={message.messageId} />
+                    )
+                })}
             </Paper>
-        </div>
+            <TextInput chatroomId={chatroomId} />
+            <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid item xs={6}>
+                    <Button variant="contained" startIcon={<Add />}>
+                        친구 초대
+                    </Button>
+                </Grid>
+                <Grid item xs={6}>
+                    <Button variant="contained" startIcon={<ExitToApp />}>
+                        나가기
+                    </Button>
+                </Grid>
+            </Grid>
+        </>
     )
 }

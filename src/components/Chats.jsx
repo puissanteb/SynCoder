@@ -1,5 +1,142 @@
 import React, { useState, useEffect } from 'react'
+import {
+    Box,
+    Paper,
+    List,
+    Divider,
+    Button,
+    Grid,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+} from '@material-ui/core'
+import { Add } from '@material-ui/icons'
+import Chatroom from './chats/Chatroom'
+import ChatroomListItem from './chats/ChatroomListItem'
+import { addChatroom } from '../api/chatrooms'
+import { getChatroomsByUserId } from '../api/members'
+import firebase from 'firebase'
 
 export default function Chats() {
-    return <></>
+    const [selectedIndex, setSelectedIndex] = useState(null)
+    const [selectedChatroomId, setSelectedChatroomId] = useState(null)
+    const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [chatroomTitle, setChatroomTitle] = useState(``)
+    const [chatrooms, setChatrooms] = useState([])
+    const handleListItemClick = (index, chatroomId) => {
+        setSelectedIndex(index)
+        setSelectedChatroomId(chatroomId)
+    }
+    const handleOpen = () => setOpen(true)
+    const handleClose = () => setOpen(false)
+    const loadChatrooms = () => {
+        getChatroomsByUserId(firebase.auth().currentUser?.uid)
+            .then(setChatrooms)
+            .catch(console.error)
+    }
+    const submitChatroom = () => {
+        setLoading(true)
+        addChatroom(firebase.auth().currentUser?.uid, chatroomTitle)
+            .then(handleClose)
+            .then(() => setLoading(false))
+            .then(loadChatrooms)
+            .catch(console.error)
+    }
+    useEffect(loadChatrooms, [])
+    return (
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="form-dialog-title"
+            >
+                <DialogTitle id="form-dialog-title">새로운 채팅</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="standard-required"
+                        label="채팅방 이름"
+                        value={chatroomTitle}
+                        onChange={(e) => setChatroomTitle(e.target.value)}
+                        type="text"
+                        fullWidth
+                        required
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={submitChatroom}
+                        color="primary"
+                        disabled={loading || !chatroomTitle}
+                    >
+                        확인
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Paper>
+                <Grid container item spacing={3}>
+                    <Grid item xs={4}>
+                        <Box
+                            sx={{
+                                width: '100%',
+                                maxWidth: 360,
+                                bgcolor: 'background.paper',
+                            }}
+                        >
+                            <Grid
+                                container
+                                direction="row"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<Add />}
+                                    onClick={handleOpen}
+                                >
+                                    새로운 채팅
+                                </Button>
+                            </Grid>
+                            <List component="nav" aria-label="chatrooms">
+                                {chatrooms.map((chatroomId, index, array) => {
+                                    return (
+                                        <>
+                                            <ChatroomListItem
+                                                chatroomId={chatroomId}
+                                                selectedIndex={selectedIndex}
+                                                handleListItemClick={
+                                                    handleListItemClick
+                                                }
+                                                currentIndex={index}
+                                                key={chatroomId}
+                                            />
+                                            {index === array.length - 1 ? (
+                                                <></>
+                                            ) : (
+                                                <Divider
+                                                    variant="inset"
+                                                    component="li"
+                                                />
+                                            )}
+                                        </>
+                                    )
+                                })}
+                            </List>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={8}>
+                        {selectedChatroomId ? (
+                            <Chatroom chatroomId={selectedChatroomId} />
+                        ) : (
+                            <></>
+                        )}
+                    </Grid>
+                </Grid>
+            </Paper>
+        </>
+    )
 }

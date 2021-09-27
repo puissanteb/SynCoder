@@ -11,7 +11,7 @@ import { getUserNickname, getPhotoURL } from '../../api/users'
 import { followUser, unfollowUser } from '../../api/follows'
 import firebase from 'firebase'
 
-export default function FriendListItem({ userId, following = false }) {
+export default function FriendsListItem({ userId, following = false }) {
     const [nickname, setNickname] = useState('')
     const [photoURL, setPhotoURL] = useState('')
     const [follow, setFollow] = useState(following)

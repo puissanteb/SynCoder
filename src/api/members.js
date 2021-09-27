@@ -49,7 +49,7 @@ export function getMembersByChatroomId(chatroomId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj)
+                    const arr = Object.values(obj).map(({ userId }) => userId)
                     resolve(arr)
                 } else {
                     resolve([])
@@ -72,10 +72,8 @@ export function getChatroomsByUserId(userId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj)
-                    arr.sort(
-                        (a, b) =>
-                            Date.parse(a.createdAt) - Date.parse(b.createdAt)
+                    const arr = Object.values(obj).map(
+                        (value) => value.chatroomId
                     )
                     resolve(arr)
                 } else {

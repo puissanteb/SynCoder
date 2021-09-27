@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Avatar } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
+import { getUserNickname, getPhotoURL } from '../../api/users'
+import { formatDate } from '../../utils/utils'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -115,28 +117,32 @@ const useStyles = makeStyles((theme) =>
 )
 
 //avatarが左にあるメッセージ（他人）
-export const MessageLeft = (props) => {
-    const message = props.message ?? 'no message'
-    const timestamp = props.timestamp ?? ''
-    const photoURL = props.photoURL ?? 'dummy.js'
-    const displayName = props.displayName ?? '名無しさん'
+export const MessageLeft = ({ body, createdAt, userId }) => {
+    const [photoURL, setPhotoURL] = useState(``)
+    const [nickname, setNickname] = useState(``)
     const classes = useStyles()
+    useEffect(() => {
+        Promise.all([
+            getUserNickname(userId).then(setNickname).catch(console.error),
+            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
+        ])
+    }, [])
     return (
         <>
             <div className={classes.messageRow}>
                 <Avatar
-                    alt={displayName}
+                    alt={nickname}
                     className={classes.orange}
                     src={photoURL}
                 ></Avatar>
                 <div>
-                    <div className={classes.displayName}>{displayName}</div>
+                    <div className={classes.displayName}>{nickname}</div>
                     <div className={classes.messageBlue}>
                         <div>
-                            <p className={classes.messageContent}>{message}</p>
+                            <p className={classes.messageContent}>{body}</p>
                         </div>
                         <div className={classes.messageTimeStampRight}>
-                            {timestamp}
+                            {formatDate(new Date(createdAt), new Date())}
                         </div>
                     </div>
                 </div>
@@ -145,15 +151,15 @@ export const MessageLeft = (props) => {
     )
 }
 //avatarが右にあるメッセージ（自分）
-export const MessageRight = (props) => {
+export const MessageRight = ({ body, createdAt }) => {
     const classes = useStyles()
-    const message = props.message ?? 'no message'
-    const timestamp = props.timestamp ?? ''
     return (
         <div className={classes.messageRowRight}>
             <div className={classes.messageOrange}>
-                <p className={classes.messageContent}>{message}</p>
-                <div className={classes.messageTimeStampRight}>{timestamp}</div>
+                <p className={classes.messageContent}>{body}</p>
+                <div className={classes.messageTimeStampRight}>
+                    {formatDate(new Date(createdAt), new Date())}
+                </div>
             </div>
         </div>
     )

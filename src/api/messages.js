@@ -22,11 +22,10 @@ export function getMessagesByChatroomId(chatroomId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj)
-                    arr.sort(
-                        (a, b) =>
-                            Date.parse(a.createdAt) - Date.parse(b.createdAt)
-                    )
+                    const arr = []
+                    for (let key in obj) {
+                        arr.push({ ...obj[key], messageId: key })
+                    }
                     resolve(arr)
                 } else {
                     resolve([])
