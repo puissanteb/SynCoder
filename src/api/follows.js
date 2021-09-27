@@ -12,7 +12,9 @@ export function getFollowsByUserId(userId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj)
+                    const arr = Object.values(obj).map(
+                        (value) => value.followUserId
+                    )
                     resolve(arr)
                 } else {
                     resolve([])
@@ -35,7 +37,7 @@ export function getFollowsByFollowUserId(followUserId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj)
+                    const arr = Object.values(obj).map((value) => value.userId)
                     resolve(arr)
                 } else {
                     resolve([])

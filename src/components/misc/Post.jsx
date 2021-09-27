@@ -6,9 +6,9 @@ import Reply from './Reply'
 import Editor from './Editor'
 import Likes from './Likes'
 import { Typography, Avatar, Container } from '@material-ui/core'
-import { getUserNickname, getPhotoURL } from '../api/users'
-import { getReplies } from '../api/replies'
-import { formatDate } from '../utils/utils'
+import { getUserNickname, getPhotoURL } from '../../api/users'
+import { getReplies } from '../../api/replies'
+import { formatDate } from '../../utils/utils'
 
 export default function Post({
     postId,

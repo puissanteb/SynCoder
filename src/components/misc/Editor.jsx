@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Container, Button, TextField, Grid, Paper } from '@material-ui/core'
 import { Create } from '@material-ui/icons'
-import { addPost } from '../api/posts'
-import { addReply } from '../api/replies'
+import { addPost } from '../../api/posts'
+import { addReply } from '../../api/replies'
 import firebase from 'firebase'
 
 export default function Editor({
@@ -15,7 +15,7 @@ export default function Editor({
     const [loading, setLoading] = useState(false)
     const submitPost = () => {
         setLoading(true)
-        addPost(firebase.auth().currentUser.uid, content)
+        addPost(firebase.auth().currentUser?.uid, content)
             .then(() => {
                 setContent(``)
                 setLoading(false)
@@ -25,7 +25,7 @@ export default function Editor({
     }
     const submitReply = () => {
         setLoading(true)
-        addReply(firebase.auth().currentUser.uid, postId, content)
+        addReply(firebase.auth().currentUser?.uid, postId, content)
             .then(() => {
                 setContent(``)
                 setLoading(false)

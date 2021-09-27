@@ -1,5 +1,19 @@
 import firebase from 'firebase'
 
+export async function getUsers() {
+    const usersRef = firebase.database().ref(`users`)
+    try {
+        const snapshot = await usersRef.get()
+        if (snapshot.exists()) {
+            return Object.keys(snapshot.val())
+        } else {
+            return []
+        }
+    } catch (message) {
+        return console.error(message)
+    }
+}
+
 export async function getUserNickname(userId) {
     const usersRef = firebase.database().ref(`users/${userId}`)
     try {

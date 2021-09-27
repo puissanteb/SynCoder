@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { Switch, Route, useLocation } from 'react-router-dom'
+import firebase from 'firebase'
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -15,15 +17,18 @@ import {
     Container,
 } from '@material-ui/core'
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons'
-import { mainListItems } from '../utils/listItems'
+import MainListItems from './misc/MainListItems'
 import styles from '../utils/useStyles'
 import { Copyright } from '../utils/utils'
-import Profile from './Profile'
+import Preferences from './misc/Preferences'
 import Timeline from './Timeline'
+import Friends from './Friends'
+import Groups from './Groups'
+import Chats from './Chats'
 
 const useStyles = makeStyles(styles())
 
-export default function Main({ user }) {
+export default function Main() {
     const classes = useStyles()
     const [open, setOpen] = useState(true)
     const handleDrawerOpen = () => {
@@ -31,6 +36,21 @@ export default function Main({ user }) {
     }
     const handleDrawerClose = () => {
         setOpen(false)
+    }
+    const location = useLocation()
+    const getTitle = (pathname) => {
+        switch (pathname) {
+            case '/friends':
+                return '친구'
+            case '/groups':
+                return '그룹'
+            case '/chats':
+                return '채팅'
+            case '/':
+                return '타임라인'
+            default:
+        }
+        return 'SynCoder'
     }
 
     return (
@@ -60,7 +80,7 @@ export default function Main({ user }) {
                         noWrap
                         className={classes.title}
                     >
-                        Dashboard
+                        {getTitle(location.pathname)}
                     </Typography>
                     <IconButton color="inherit">
                         <Badge badgeContent={4} color="secondary">
@@ -85,16 +105,31 @@ export default function Main({ user }) {
                     </IconButton>
                 </div>
                 <Divider />
-                <List>{mainListItems}</List>
+                <List>
+                    <MainListItems />
+                </List>
                 <Divider />
                 <List>
-                    <Profile user={user} />
+                    <Preferences user={firebase.auth().currentUser} />
                 </List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-                    <Timeline />
+                    <Switch>
+                        <Route path="/friends" exact>
+                            <Friends />
+                        </Route>
+                        <Route path="/groups" exact>
+                            <Groups />
+                        </Route>
+                        <Route path="/chats" exact>
+                            <Chats />
+                        </Route>
+                        <Route path="/" exact>
+                            <Timeline />
+                        </Route>
+                    </Switch>
                 </Container>
                 <Container maxWidth="lg" className={classes.container}>
                     <Box pt={4}>

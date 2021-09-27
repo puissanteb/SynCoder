@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getUserNickname, getPhotoURL } from '../api/users'
+import { getUserNickname, getPhotoURL } from '../../api/users'
 import {
     ListItem,
     ListItemAvatar,

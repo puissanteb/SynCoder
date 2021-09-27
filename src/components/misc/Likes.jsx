@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { getLikes, addLike, cancelLike } from '../api/likes'
-import { deletePost } from '../api/posts'
-import { getFollowsByRelations, followUser, unfollowUser } from '../api/follows'
+import { getLikes, addLike, cancelLike } from '../../api/likes'
+import { deletePost } from '../../api/posts'
+import {
+    getFollowsByRelations,
+    followUser,
+    unfollowUser,
+} from '../../api/follows'
 import {
     Typography,
     Dialog,
@@ -29,26 +33,26 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
     const handleClose = () => setOpen(false)
     const loadLikes = () => getLikes(postId).then(setLikes).catch(console.error)
     const loadFollows = () =>
-        getFollowsByRelations(firebase.auth().currentUser.uid, authorId)
+        getFollowsByRelations(firebase.auth().currentUser?.uid, authorId)
             .then(setMyFollow)
             .catch(console.error)
     const submitLike = () => {
         myLike
-            ? cancelLike(firebase.auth().currentUser.uid, postId)
+            ? cancelLike(firebase.auth().currentUser?.uid, postId)
                   .then(() => getLikes(postId))
                   .then(setLikes)
                   .catch(console.error)
-            : addLike(firebase.auth().currentUser.uid, postId)
+            : addLike(firebase.auth().currentUser?.uid, postId)
                   .then(() => getLikes(postId))
                   .then(setLikes)
                   .catch(console.error)
     }
     const submitFollow = () => {
         myFollow
-            ? unfollowUser(firebase.auth().currentUser.uid, authorId)
+            ? unfollowUser(firebase.auth().currentUser?.uid, authorId)
                   .then(() => setMyFollow(false))
                   .catch(console.error)
-            : followUser(firebase.auth().currentUser.uid, authorId)
+            : followUser(firebase.auth().currentUser?.uid, authorId)
                   .then(() => setMyFollow(true))
                   .catch(console.error)
     }
@@ -60,7 +64,7 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
     useEffect(() => {
         setMyLike(
             likes.filter(
-                ({ userId }) => userId === firebase.auth().currentUser.uid
+                ({ userId }) => userId === firebase.auth().currentUser?.uid
             ).length !== 0
         )
     }, [likes])
@@ -88,7 +92,7 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
                 checked={myLike}
                 onChange={submitLike}
             />
-            {authorId === firebase.auth().currentUser.uid ? (
+            {authorId === firebase.auth().currentUser?.uid ? (
                 <IconButton aria-label="delete" onClick={submitDelete}>
                     <Delete />
                 </IconButton>

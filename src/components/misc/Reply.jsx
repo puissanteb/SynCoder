@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { getUserNickname } from '../api/users'
-import { deleteReply } from '../api/replies'
-import { formatDate } from '../utils/utils'
+import { getUserNickname } from '../../api/users'
+import { deleteReply } from '../../api/replies'
+import { formatDate } from '../../utils/utils'
 import firebase from 'firebase'
 
 export default function Reply({
@@ -22,7 +22,7 @@ export default function Reply({
             <p>{nickname}</p>
             <p>{body}</p>
             <p>{formatDate(new Date(createdAt), new Date())}</p>
-            {userId === firebase.auth().currentUser.uid ? (
+            {userId === firebase.auth().currentUser?.uid ? (
                 <button onClick={submitDeleteReply}>삭제</button>
             ) : (
                 <></>
