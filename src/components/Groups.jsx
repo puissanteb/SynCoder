@@ -22,9 +22,9 @@ export default function Groups() {
             .catch(console.error)
     }
     const submitGroup = (title, description) => {
-        setLoading(false)
+        setLoading(true)
         addGroup(title, description)
-            .then(() => setLoading(true))
+            .then(() => setLoading(false))
             .then(loadGroups)
             .catch(console.error)
     }
