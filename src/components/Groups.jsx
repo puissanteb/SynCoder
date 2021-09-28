@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Grid, Paper, List } from '@material-ui/core'
 
-export default function Groups() {
+export default function Groups({
+    userInfos,
+    updateUserInfos,
+    nicknames,
+    updateNicknames,
+}) {
     return (
         <Grid container spacing={3}>
             <Grid item xs={12} md={8} lg={9}>

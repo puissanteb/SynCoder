@@ -134,10 +134,20 @@ export default function Main() {
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
                         <Route path="/friends" exact>
-                            <Friends />
+                            <Friends
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
+                            />
                         </Route>
                         <Route path="/groups" exact>
-                            <Groups />
+                            <Groups
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
+                            />
                         </Route>
                         <Route path="/chats" exact>
                             <Chats

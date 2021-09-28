@@ -7,13 +7,15 @@ import {
     ListItemText,
 } from '@material-ui/core'
 import { Add, Check } from '@material-ui/icons'
-import { getUserNickname, getPhotoURL } from '../../api/users'
 import { followUser, unfollowUser } from '../../api/follows'
 import firebase from 'firebase'
 
-export default function FriendsListItem({ userId, following = false }) {
-    const [nickname, setNickname] = useState('')
-    const [photoURL, setPhotoURL] = useState('')
+export default function FriendsListItem({
+    userId,
+    nickname,
+    photoURL,
+    following = false,
+}) {
     const [follow, setFollow] = useState(following)
     const getSecondaryText = (userId, follow) => {
         if (userId === firebase.auth().currentUser?.uid) return '나'
@@ -29,12 +31,6 @@ export default function FriendsListItem({ userId, following = false }) {
                   .then(() => setFollow(true))
                   .catch(console.error)
     }
-    useEffect(() => {
-        Promise.all([
-            getUserNickname(userId).then(setNickname).catch(console.error),
-            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
-        ])
-    }, [])
     return (
         <ListItem>
             <ListItemAvatar>

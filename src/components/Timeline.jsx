@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import firebase from 'firebase'
 import { getPhotoURL, getUserNickname } from '../api/users'
 import { addPostListener } from '../api/posts'
@@ -64,7 +64,6 @@ export default function Timeline({
             {posts.map((post) => (
                 <Post
                     {...post}
-                    nickname={post?.user?.nickname ?? `닉네임 없음`}
                     photoURL={userInfos[post.userId] ?? ``}
                     nickname={nicknames[post.userId] ?? ``}
                     callbackFn={loadPosts}
