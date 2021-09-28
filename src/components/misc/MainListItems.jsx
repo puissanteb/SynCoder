@@ -6,7 +6,7 @@ import { Link as RouterLink } from 'react-router-dom'
 export default function MainListItems() {
     return (
         <div>
-            <ListItem button component={RouterLink} to="/">
+            <ListItem button component={RouterLink} to="/timeline">
                 <ListItemIcon>
                     <Dashboard />
                 </ListItemIcon>

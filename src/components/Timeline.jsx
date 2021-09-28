@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import { Grid } from '@material-ui/core'
 import firebase from 'firebase'
 import { getPhotoURL, getUserNickname } from '../api/users'
-import { addPostListener } from '../api/posts'
+import { addPostListener, addGroupPostListener } from '../api/posts'
 import { getFollowsByUserId } from '../api/follows'
 import Post from './misc/Post'
 import Editor from './misc/Editor'
-import { Grid } from '@material-ui/core'
+import { useParams } from 'react-router-dom'
 
 export default function Timeline({
     userInfos,
@@ -14,17 +15,27 @@ export default function Timeline({
     updateNicknames,
 }) {
     const [posts, setPosts] = useState([])
+    const params = useParams()
+    const groupId = params.groupId ?? ``
     const loadPosts = async () => {
-        const postsRef = firebase.database().ref(`posts`)
+        const postsRef = groupId
+            ? firebase
+                  .database()
+                  .ref(`posts`)
+                  .orderByChild(`groupId`)
+                  .equalTo(groupId)
+            : firebase.database().ref(`posts`)
         const followsArr = await getFollowsByUserId(
             firebase.auth().currentUser?.uid
         )
-        const listener = addPostListener(
-            postsRef,
-            firebase.auth().currentUser?.uid,
-            followsArr,
-            setPosts
-        )
+        const listener = groupId
+            ? addGroupPostListener(postsRef, setPosts)
+            : addPostListener(
+                  postsRef,
+                  firebase.auth().currentUser?.uid,
+                  followsArr,
+                  setPosts
+              )
         return () => postsRef.off('value', listener)
     }
     const loadUserInfos = () => {
@@ -60,7 +71,7 @@ export default function Timeline({
     useEffect(loadNicknames, [posts])
     return (
         <Grid container spacing={3}>
-            <Editor callbackFn={loadPosts} />
+            <Editor callbackFn={loadPosts} groupId={groupId} />
             {posts.map((post) => (
                 <Post
                     {...post}

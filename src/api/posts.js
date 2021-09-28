@@ -1,5 +1,4 @@
 import firebase from 'firebase'
-import { getFollowsByUserId } from './follows'
 
 export function addPostListener(
     ref,
@@ -7,6 +6,51 @@ export function addPostListener(
     followsArr,
     callbackFn = (f) => f
 ) {
+    return ref.on(
+        'value',
+        (snapshot) => {
+            if (snapshot.exists()) {
+                const obj = snapshot.val()
+                const arr = []
+                for (let key in obj) {
+                    const authorId = obj[key].userId
+                    if (authorId === userId || followsArr.includes(authorId))
+                        arr.push({
+                            ...obj[key],
+                            postId: key,
+                        })
+                    // const authorId = obj[key].userId
+                    // firebase
+                    //     .database()
+                    //     .ref(`users/${authorId}`)
+                    //     .get()
+                    //     .then((res) => {
+                    //         if (
+                    //             res.exists() &&
+                    //             (authorId === userId ||
+                    //                 followsArr.includes(authorId))
+                    //         ) {
+                    //             const user = res.val()
+                    //             arr.push({
+                    //                 ...obj[key],
+                    //                 user,
+                    //                 postId: key,
+                    //             })
+                    //         }
+                    //     })
+                    //     .catch(console.error)
+                }
+                arr.sort(
+                    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                )
+                callbackFn(arr)
+            }
+        },
+        (error) => console.error(error)
+    )
+}
+
+export function addGroupPostListener(ref, callbackFn = (f) => f) {
     return ref.on(
         'value',
         (snapshot) => {
@@ -49,12 +93,13 @@ export function addPostListener(
     )
 }
 
-export function addPost(userId, body) {
+export function addPost(userId, body, groupId = ``) {
     const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
     const newPostKey = firebase.database().ref(`posts`).push().key
     return firebase.database().ref(`posts/${newPostKey}`).set({
         userId,
         body,
+        groupId,
         createdAt: now,
         modifiedAt: now,
     })

@@ -1,5 +1,5 @@
-import React, { useState, useReducer } from 'react'
-import { Switch, Route, useLocation } from 'react-router-dom'
+import React, { useState, useEffect, useReducer } from 'react'
+import { Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import firebase from 'firebase'
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
@@ -18,6 +18,7 @@ import {
 } from '@material-ui/core'
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons'
 import MainListItems from './misc/MainListItems'
+import { getGroupInfo } from '../api/groups'
 import styles from '../utils/useStyles'
 import { Copyright } from '../utils/utils'
 import Preferences from './misc/Preferences'
@@ -31,6 +32,7 @@ const useStyles = makeStyles(styles())
 export default function Main() {
     const classes = useStyles()
     const [open, setOpen] = useState(true)
+    const [title, setTitle] = useState(`SynCoder`)
     const handleDrawerOpen = () => {
         setOpen(true)
     }
@@ -39,18 +41,30 @@ export default function Main() {
     }
     const location = useLocation()
     const getTitle = (pathname) => {
-        switch (pathname) {
-            case '/friends':
-                return '친구'
-            case '/groups':
-                return '그룹'
-            case '/chats':
-                return '채팅'
-            case '/':
-                return '타임라인'
-            default:
-        }
-        return 'SynCoder'
+        return new Promise((resolve, reject) => {
+            switch (pathname) {
+                case '/friends':
+                    resolve('친구')
+                    break
+                case '/groups':
+                    resolve('그룹')
+                    break
+                case '/chats':
+                    resolve('채팅')
+                    break
+                case '/timeline':
+                    resolve('타임라인')
+                    break
+                default:
+                    if (pathname.startsWith('/groups'))
+                        resolve(
+                            getGroupInfo(pathname.slice(8)).then(
+                                ({ title }) => title
+                            )
+                        )
+            }
+            resolve('SynCoder')
+        })
     }
     const [userInfos, updateUserInfos] = useReducer(
         (state, [userId, value]) => {
@@ -68,6 +82,9 @@ export default function Main() {
         },
         {}
     )
+    useEffect(() => {
+        getTitle(location.pathname).then(setTitle).catch(console.error)
+    }, [location.pathname])
 
     return (
         <div className={classes.root}>
@@ -96,7 +113,7 @@ export default function Main() {
                         noWrap
                         className={classes.title}
                     >
-                        {getTitle(location.pathname)}
+                        {title}
                     </Typography>
                     <IconButton color="inherit">
                         <Badge badgeContent={4} color="secondary">
@@ -149,6 +166,14 @@ export default function Main() {
                                 updateNicknames={updateNicknames}
                             />
                         </Route>
+                        <Route path="/groups/:groupId">
+                            <Timeline
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
+                            />
+                        </Route>
                         <Route path="/chats" exact>
                             <Chats
                                 userInfos={userInfos}
@@ -157,7 +182,7 @@ export default function Main() {
                                 updateNicknames={updateNicknames}
                             />
                         </Route>
-                        <Route path="/" exact>
+                        <Route path="/timeline" exact>
                             <Timeline
                                 userInfos={userInfos}
                                 updateUserInfos={updateUserInfos}
@@ -165,6 +190,7 @@ export default function Main() {
                                 updateNicknames={updateNicknames}
                             />
                         </Route>
+                        <Redirect from="/" to="/timeline" />
                     </Switch>
                 </Container>
                 <Container maxWidth="lg" className={classes.container}>

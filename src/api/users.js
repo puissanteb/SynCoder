@@ -33,18 +33,6 @@ export async function getPhotoURL(userId) {
     try {
         return imageRef.getDownloadURL()
     } catch (message) {
-        return console.log(message)
-    }
-}
-
-export async function getUserInfo(userId) {
-    try {
-        const obj = {}
-        const nickname = await getUserNickname(userId)
-        const photoURL = await getPhotoURL(userId)
-        obj[userId] = { nickname, photoURL }
-        return obj
-    } catch (message) {
         return console.error(message)
     }
 }

@@ -1,21 +1,10 @@
-import React, { useState, useEffect, useReducer } from 'react'
-import {
-    Box,
-    Paper,
-    List,
-    Divider,
-    Button,
-    Grid,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-} from '@material-ui/core'
+import React, { useState, useEffect } from 'react'
+import { Box, Paper, List, Divider, Button, Grid } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import Chatroom from './chats/Chatroom'
 import ChatroomListItem from './chats/ChatroomListItem'
+import CustomDialog from './misc/CustomDialog'
 import { addChatroom } from '../api/chatrooms'
 import { getChatroomsByUserId } from '../api/members'
 import firebase from 'firebase'
@@ -55,7 +44,6 @@ export default function Chats({
     const [selectedChatroomId, setSelectedChatroomId] = useState(null)
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [chatroomTitle, setChatroomTitle] = useState(``)
     const [chatrooms, setChatrooms] = useState([])
     const handleListItemClick = (index, chatroomId) => {
         setSelectedIndex(index)
@@ -69,7 +57,7 @@ export default function Chats({
             .then(() => handleListItemClick(null, null))
             .catch(console.error)
     }
-    const submitChatroom = () => {
+    const submitChatroom = (chatroomTitle) => {
         setLoading(true)
         addChatroom(firebase.auth().currentUser?.uid, chatroomTitle)
             .then(handleClose)
@@ -80,35 +68,14 @@ export default function Chats({
     useEffect(loadChatrooms, [])
     return (
         <>
-            <Dialog
+            <CustomDialog
+                title="새로운 채팅"
+                label="채팅방 이름"
                 open={open}
-                onClose={handleClose}
-                aria-labelledby="form-dialog-title"
-            >
-                <DialogTitle id="form-dialog-title">새로운 채팅</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="standard-required"
-                        label="채팅방 이름"
-                        value={chatroomTitle}
-                        onChange={(e) => setChatroomTitle(e.target.value)}
-                        type="text"
-                        fullWidth
-                        required
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={submitChatroom}
-                        color="primary"
-                        disabled={loading || !chatroomTitle}
-                    >
-                        확인
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                loading={loading}
+                handleClose={handleClose}
+                callbackFn={submitChatroom}
+            />
             <Paper className={`${classes.paperMain} ${classes.paper}`}>
                 <Grid container item spacing={3} className={classes.grid}>
                     <Grid item xs={4}>
@@ -123,7 +90,7 @@ export default function Chats({
                                 container
                                 direction="row"
                                 justifyContent="center"
-                                aligtems="center"
+                                alignItems="center"
                             >
                                 <Button
                                     variant="outlined"

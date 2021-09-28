@@ -9,13 +9,14 @@ export default function Editor({
     label = '게시물 작성하기',
     placeholder = '당신의 개발로그가 궁금해요',
     postId,
+    groupId = ``,
     callbackFn = (f) => f,
 }) {
     const [content, setContent] = useState(``)
     const [loading, setLoading] = useState(false)
     const submitPost = () => {
         setLoading(true)
-        addPost(firebase.auth().currentUser?.uid, content)
+        addPost(firebase.auth().currentUser?.uid, content, groupId)
             .then(() => {
                 setContent(``)
                 setLoading(false)

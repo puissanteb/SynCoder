@@ -40,7 +40,7 @@ export default function FriendsListItem({
                 primary={nickname}
                 secondary={getSecondaryText(userId, follow)}
             />
-            <IconButton edge="end" aria-label="delete" onClick={toggleFollow}>
+            <IconButton edge="end" aria-label="follow" onClick={toggleFollow}>
                 {userId === firebase.auth().currentUser?.uid ? (
                     <></>
                 ) : follow ? (

@@ -29,7 +29,6 @@ export function getMessagesByChatroomId(chatroomId) {
                             .database()
                             .ref(`users/${userId}`)
                         userRef.get().then((user) => {
-                            console.log(user)
                             arr.push({ ...obj[key], user, messageId: key })
                         })
                     }
