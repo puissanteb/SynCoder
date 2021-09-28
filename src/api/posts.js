@@ -9,7 +9,22 @@ export async function getPosts() {
             const obj = snapshot.val()
             const arr = []
             for (let key in obj) {
-                arr.push({ ...obj[key], postId: key })
+                const authorId = obj[key].userId
+                firebase
+                    .database()
+                    .ref(`users/${authorId}`)
+                    .get()
+                    .then((res) => {
+                        if (res.exists()) {
+                            const user = res.val()
+                            arr.push({
+                                ...obj[key],
+                                user,
+                                postId: key,
+                            })
+                        }
+                    })
+                    .catch(console.error)
             }
             arr.sort(
                 (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
@@ -21,13 +36,6 @@ export async function getPosts() {
     } catch (message) {
         return console.error(message)
     }
-    // postsRef.on('child_added', (snapshot) => {
-    //     if (snapshot.exists()) {
-    //         console.log(snapshot.val())
-    //     } else {
-    //         console.log('No data available')
-    //     }
-    // })
 }
 
 export async function getPostsByUserId(userId) {
@@ -39,7 +47,26 @@ export async function getPostsByUserId(userId) {
             const obj = snapshot.val()
             const arr = []
             for (let key in obj) {
-                arr.push({ ...obj[key], postId: key })
+                arr.push({
+                    ...obj[key],
+                    postId: key,
+                })
+                // const authorId = obj[key].userId
+                // firebase
+                //     .database()
+                //     .ref(`users/${authorId}`)
+                //     .get()
+                //     .then((res) => {
+                //         if (res.exists()) {
+                //             const user = res.val()
+                //             arr.push({
+                //                 ...obj[key],
+                //                 user,
+                //                 postId: key,
+                //             })
+                //         }
+                //     })
+                //     .catch(console.error)
             }
             arr.sort(
                 (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)

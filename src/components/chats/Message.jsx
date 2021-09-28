@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Avatar } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
-import { getUserNickname, getPhotoURL } from '../../api/users'
 import { formatDate } from '../../utils/utils'
 
 const useStyles = makeStyles((theme) =>
@@ -117,16 +116,8 @@ const useStyles = makeStyles((theme) =>
 )
 
 //avatarが左にあるメッセージ（他人）
-export const MessageLeft = ({ body, createdAt, userId }) => {
-    const [photoURL, setPhotoURL] = useState(``)
-    const [nickname, setNickname] = useState(``)
+export const MessageLeft = ({ body, createdAt, nickname, photoURL }) => {
     const classes = useStyles()
-    useEffect(() => {
-        Promise.all([
-            getUserNickname(userId).then(setNickname).catch(console.error),
-            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
-        ])
-    }, [])
     return (
         <>
             <div className={classes.messageRow}>

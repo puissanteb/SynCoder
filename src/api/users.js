@@ -28,6 +28,27 @@ export async function getUserNickname(userId) {
     }
 }
 
+export async function getPhotoURL(userId) {
+    const imageRef = firebase.storage().ref(`images/temp/${userId}.jpg`)
+    try {
+        return imageRef.getDownloadURL()
+    } catch (message) {
+        return console.log(message)
+    }
+}
+
+export async function getUserInfo(userId) {
+    try {
+        const obj = {}
+        const nickname = await getUserNickname(userId)
+        const photoURL = await getPhotoURL(userId)
+        obj[userId] = { nickname, photoURL }
+        return obj
+    } catch (message) {
+        return console.error(message)
+    }
+}
+
 export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
     const usersRef = firebase.database().ref(`users/${userId}`)
     usersRef
@@ -44,13 +65,4 @@ export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
             return true
         })
         .catch(console.error)
-}
-
-export async function getPhotoURL(userId) {
-    const imageRef = firebase.storage().ref().child(`images/temp/${userId}.jpg`)
-    try {
-        return imageRef.getDownloadURL()
-    } catch (message) {
-        return console.error(message)
-    }
 }

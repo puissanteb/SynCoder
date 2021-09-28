@@ -24,7 +24,14 @@ export function getMessagesByChatroomId(chatroomId) {
                     const obj = snapshot.val()
                     const arr = []
                     for (let key in obj) {
-                        arr.push({ ...obj[key], messageId: key })
+                        const { userId } = obj[key]
+                        const userRef = firebase
+                            .database()
+                            .ref(`users/${userId}`)
+                        userRef.get().then((user) => {
+                            console.log(user)
+                            arr.push({ ...obj[key], user, messageId: key })
+                        })
                     }
                     resolve(arr)
                 } else {
@@ -34,4 +41,36 @@ export function getMessagesByChatroomId(chatroomId) {
             (error) => reject(error)
         )
     })
+}
+
+export function addMessageListener(ref, callbackFn = (f) => f) {
+    return ref.on(
+        'value',
+        (snapshot) => {
+            if (snapshot.exists()) {
+                const obj = snapshot.val()
+                const arr = []
+                for (let key in obj) {
+                    const { userId } = obj[key]
+                    firebase
+                        .database()
+                        .ref(`users/${userId}`)
+                        .get()
+                        .then((res) => {
+                            if (res.exists()) {
+                                const user = res.val()
+                                arr.push({
+                                    ...obj[key],
+                                    user,
+                                    messageId: key,
+                                })
+                            }
+                        })
+                        .catch(console.error)
+                }
+                callbackFn(arr)
+            }
+        },
+        (error) => console.error(error)
+    )
 }
