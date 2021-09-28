@@ -1,15 +1,18 @@
 import firebase from 'firebase'
 import { inviteMember } from './members'
 
-export function addChatroom(userId, chatroomTitle) {
+export async function addChatroom(userId, chatroomTitle) {
     const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
     const newChatroomKey = firebase.database().ref(`chatrooms`).push().key
-    return firebase
-        .database()
-        .ref(`chatrooms/${newChatroomKey}`)
-        .set({ userId, chatroomTitle, createdAt: now, modifiedAt: now })
-        .then(() => inviteMember(userId, newChatroomKey))
-        .catch(console.error)
+    try {
+        await firebase
+            .database()
+            .ref(`chatrooms/${newChatroomKey}`)
+            .set({ userId, chatroomTitle, createdAt: now, modifiedAt: now })
+        return await inviteMember(userId, newChatroomKey)
+    } catch (message) {
+        return console.error(message)
+    }
 }
 
 export async function deleteChatroom(chatroomId) {
@@ -20,13 +23,13 @@ export async function deleteChatroom(chatroomId) {
     }
 }
 
-export async function getChatroomTitle(chatroomId) {
+export async function getChatroomByChatroomId(chatroomId) {
     try {
         const snapshot = await firebase
             .database()
-            .ref(`chatrooms/${chatroomId}/chatroomTitle`)
+            .ref(`chatrooms/${chatroomId}`)
             .get()
-        return snapshot.exists() ? snapshot.val() : ``
+        return snapshot.exists() ? { ...snapshot.val(), chatroomId } : ``
     } catch (message) {
         return console.error(message)
     }

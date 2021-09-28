@@ -1,4 +1,5 @@
 import firebase from 'firebase'
+import { getChatroomByChatroomId } from './chatrooms'
 
 export function inviteMember(memberId, chatroomId) {
     const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
@@ -72,10 +73,12 @@ export function getChatroomsByUserId(userId) {
             (snapshot) => {
                 if (snapshot.exists()) {
                     const obj = snapshot.val()
-                    const arr = Object.values(obj).map(
-                        (value) => value.chatroomId
-                    )
-                    resolve(arr)
+                    const arr = Object.values(obj)
+                        .map((value) => value.chatroomId)
+                        .map((chatroomId) =>
+                            getChatroomByChatroomId(chatroomId)
+                        )
+                    resolve(Promise.all(arr))
                 } else {
                     resolve([])
                 }

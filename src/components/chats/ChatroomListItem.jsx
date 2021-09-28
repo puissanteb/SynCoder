@@ -6,19 +6,16 @@ import {
     Typography,
     Avatar,
 } from '@material-ui/core'
-import { getChatroomTitle } from '../../api/chatrooms'
+import { formatDate } from '../../utils/utils'
 
 export default function ChatroomListItem({
     selectedIndex,
     handleListItemClick,
     currentIndex,
     chatroomId,
+    chatroomTitle,
+    modifiedAt,
 }) {
-    const [chatroomTitle, setChatroomTitle] = useState(``)
-    const loadChatroomTitle = () => {
-        getChatroomTitle(chatroomId).then(setChatroomTitle).catch(console.error)
-    }
-    useEffect(loadChatroomTitle, [])
     return (
         <ListItem
             button
@@ -39,9 +36,8 @@ export default function ChatroomListItem({
                             variant="body2"
                             color="text.primary"
                         >
-                            Ali Connors
+                            {formatDate(new Date(modifiedAt), new Date())}
                         </Typography>
-                        {" — I'll be in your neighborhood doing errands this…"}
                     </>
                 }
             />

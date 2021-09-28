@@ -28,7 +28,7 @@ export const formatDate = (inputDate, now) => {
     const time = today
         ? compareTime(inputDate, now)
         : `${inputDate.getHours()}시 ${inputDate.getMinutes()}분`
-    return today ? `${time}` : `${year}${date}${time}`
+    return today ? `${time}` : `${year} ${date} ${time}`
 }
 
 const compareTime = (a, b) => {

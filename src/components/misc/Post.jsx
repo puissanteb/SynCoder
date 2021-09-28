@@ -8,7 +8,6 @@ import Likes from './Likes'
 import { Typography, Avatar, Container } from '@material-ui/core'
 import { getUserNickname, getPhotoURL } from '../../api/users'
 import { getReplies } from '../../api/replies'
-import { formatDate } from '../../utils/utils'
 
 export default function Post({
     postId,
@@ -34,10 +33,7 @@ export default function Post({
             <Paper>
                 <Container style={{ display: 'flex' }}>
                     <Avatar alt={nickname} src={photoURL}></Avatar>
-                    <Title>
-                        {nickname}/
-                        {formatDate(new Date(modifiedAt), new Date())}
-                    </Title>
+                    <Title>{nickname}</Title>
                 </Container>
                 <Container>
                     <Typography component="h3">{body}</Typography>
@@ -45,6 +41,7 @@ export default function Post({
                 <Container>
                     <Likes
                         postId={postId}
+                        modifiedAt={modifiedAt}
                         authorId={userId}
                         callbackFn={callbackFn}
                     />

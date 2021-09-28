@@ -129,17 +129,17 @@ export default function Chats() {
                                 </Button>
                             </Grid>
                             <List component="nav" aria-label="chatrooms">
-                                {chatrooms.map((chatroomId, index, array) => {
+                                {chatrooms.map((chatroom, index, array) => {
                                     return (
                                         <>
                                             <ChatroomListItem
-                                                chatroomId={chatroomId}
+                                                {...chatroom}
                                                 selectedIndex={selectedIndex}
                                                 handleListItemClick={
                                                     handleListItemClick
                                                 }
                                                 currentIndex={index}
-                                                key={chatroomId}
+                                                key={chatroom.chatroomId}
                                             />
                                             {index === array.length - 1 ? (
                                                 <></>
@@ -160,6 +160,7 @@ export default function Chats() {
                             <Chatroom
                                 chatroomId={selectedChatroomId}
                                 callbackFn={loadChatrooms}
+                                key={selectedChatroomId}
                             />
                         ) : (
                             <></>

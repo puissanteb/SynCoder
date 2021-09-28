@@ -10,6 +10,8 @@ import {
     Typography,
     Dialog,
     DialogTitle,
+    Grid,
+    Divider,
     List,
     Checkbox,
     IconButton,
@@ -22,9 +24,15 @@ import {
     Check,
 } from '@material-ui/icons'
 import UserListItem from './UserListItem'
+import { formatDate } from '../../utils/utils'
 import firebase from 'firebase'
 
-export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
+export default function Likes({
+    postId,
+    authorId,
+    modifiedAt,
+    callbackFn = (f) => f,
+}) {
     const [myLike, setMyLike] = useState(false)
     const [myFollow, setMyFollow] = useState(false)
     const [likes, setLikes] = useState([])
@@ -79,28 +87,42 @@ export default function Likes({ postId, authorId, callbackFn = (f) => f }) {
                     ))}
                 </List>
             </Dialog>
-            <Typography
-                component="h3"
-                color="primary"
-                onClick={handleClickOpen}
+            <Divider />
+            <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
             >
-                {likes.length ? `${likes.length}명이 좋아합니다.` : ``}
-            </Typography>
-            <Checkbox
-                icon={<FavoriteBorder />}
-                checkedIcon={<Favorite />}
-                checked={myLike}
-                onChange={submitLike}
-            />
-            {authorId === firebase.auth().currentUser?.uid ? (
-                <IconButton aria-label="delete" onClick={submitDelete}>
-                    <Delete />
-                </IconButton>
-            ) : (
-                <IconButton aria-label="follow" onClick={submitFollow}>
-                    {myFollow ? <Check /> : <Add />}
-                </IconButton>
-            )}
+                <Grid item xs={4}>
+                    <Typography component="h3">
+                        {formatDate(new Date(modifiedAt), new Date())}
+                    </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                    <Typography component="h3" onClick={handleClickOpen}>
+                        {likes.length ? `${likes.length}명이 좋아합니다.` : ``}
+                    </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                    <Checkbox
+                        icon={<FavoriteBorder />}
+                        checkedIcon={<Favorite />}
+                        checked={myLike}
+                        onChange={submitLike}
+                    />
+                    {authorId === firebase.auth().currentUser?.uid ? (
+                        <IconButton aria-label="delete" onClick={submitDelete}>
+                            <Delete />
+                        </IconButton>
+                    ) : (
+                        <IconButton aria-label="follow" onClick={submitFollow}>
+                            {myFollow ? <Check /> : <Add />}
+                        </IconButton>
+                    )}
+                </Grid>
+            </Grid>
+            <Divider />
         </>
     )
 }
