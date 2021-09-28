@@ -64,7 +64,7 @@ export default function Groups() {
                                 return (
                                     <GroupsListItem
                                         {...group}
-                                        following={myGroups.includes(
+                                        joining={myGroups.includes(
                                             group.groupId
                                         )}
                                         key={group.groupId}
