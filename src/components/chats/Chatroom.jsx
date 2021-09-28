@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import {
     Paper,
@@ -16,7 +16,7 @@ import {
     kickMember,
     getMembersByChatroomId,
 } from '../../api/members'
-import { getPhotoURL } from '../../api/users'
+import { getPhotoURL, getUserNickname } from '../../api/users'
 import { getFollowsByUserId } from '../../api/follows'
 import { addMessageListener } from '../../api/messages'
 import UserListItem from '../misc/UserListItem'
@@ -69,7 +69,22 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
     const [messages, setMessages] = useState([])
     const [members, setMembers] = useState([])
     const [friends, setFriends] = useState([])
-    const [userInfos, setUserInfos] = useState({})
+    const [userInfos, updateUserInfos] = useReducer(
+        (state, [userId, value]) => {
+            const obj = { ...state }
+            obj[userId] = value
+            return obj
+        },
+        {}
+    )
+    const [nicknames, updateNicknames] = useReducer(
+        (state, [userId, value]) => {
+            const obj = { ...state }
+            obj[userId] = value
+            return obj
+        },
+        {}
+    )
     const loadMessages = () => {
         const messagesRef = firebase
             .database()
@@ -77,7 +92,9 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
             .orderByChild(`chatroomId`)
             .equalTo(chatroomId)
         const listener = addMessageListener(messagesRef, setMessages)
-        return () => messagesRef.off('value', listener)
+        return () => {
+            messagesRef.off('value', listener)
+        }
     }
     const loadMembers = () =>
         getMembersByChatroomId(chatroomId).then(setMembers).catch(console.error)
@@ -86,9 +103,17 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
         return Promise.all(
             members.map((memberId) =>
                 getPhotoURL(memberId).then((photoURL) => {
-                    const obj = {}
-                    obj[memberId] = photoURL
-                    setUserInfos({ ...userInfos, ...obj })
+                    updateUserInfos([memberId, photoURL])
+                })
+            )
+        )
+    }
+    const loadNicknames = () => {
+        if (members.length === 0) return
+        return Promise.all(
+            members.map((memberId) =>
+                getUserNickname(memberId).then((nickname) => {
+                    updateNicknames([memberId, nickname])
                 })
             )
         )
@@ -110,6 +135,7 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
     useEffect(loadMembers, [])
     useEffect(loadFriends, [])
     useEffect(loadUserInfos, [members])
+    useEffect(loadNicknames, [members])
     return (
         <>
             <Dialog onClose={closeCurrentMemberDialog} open={currentMemberOpen}>
@@ -142,7 +168,9 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
                     ) : (
                         <MessageLeft
                             {...message}
-                            nickname={message?.user?.nickname ?? `닉네임 없음`}
+                            nickname={
+                                nicknames[message.userId] ?? `닉네임 없음`
+                            }
                             photoURL={userInfos[message.userId] ?? ``}
                             key={message.messageId}
                         />

@@ -6,7 +6,6 @@ import Reply from './Reply'
 import Editor from './Editor'
 import Likes from './Likes'
 import { Typography, Avatar, Container } from '@material-ui/core'
-import { getUserNickname, getPhotoURL } from '../../api/users'
 import { getReplies } from '../../api/replies'
 
 export default function Post({
@@ -14,20 +13,14 @@ export default function Post({
     userId,
     modifiedAt,
     body,
+    photoURL,
+    nickname,
     callbackFn = (f) => f,
 }) {
-    const [nickname, setNickname] = useState('')
     const [replies, setReplies] = useState([])
-    const [photoURL, setPhotoURL] = useState('')
     const loadReplies = () =>
         getReplies(postId).then(setReplies).catch(console.error)
-    useEffect(() => {
-        Promise.all([
-            getUserNickname(userId).then(setNickname).catch(console.error),
-            getReplies(postId).then(setReplies).catch(console.error),
-            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
-        ])
-    }, [])
+    useEffect(loadReplies, [])
     return (
         <Grid item xs={12} md={8} lg={9}>
             <Paper>

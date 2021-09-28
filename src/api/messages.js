@@ -51,22 +51,26 @@ export function addMessageListener(ref, callbackFn = (f) => f) {
                 const obj = snapshot.val()
                 const arr = []
                 for (let key in obj) {
-                    const { userId } = obj[key]
-                    firebase
-                        .database()
-                        .ref(`users/${userId}`)
-                        .get()
-                        .then((res) => {
-                            if (res.exists()) {
-                                const user = res.val()
-                                arr.push({
-                                    ...obj[key],
-                                    user,
-                                    messageId: key,
-                                })
-                            }
-                        })
-                        .catch(console.error)
+                    arr.push({
+                        ...obj[key],
+                        messageId: key,
+                    })
+                    // const { userId } = obj[key]
+                    // firebase
+                    //     .database()
+                    //     .ref(`users/${userId}`)
+                    //     .get()
+                    //     .then((res) => {
+                    //         if (res.exists()) {
+                    //             const user = res.val()
+                    //             arr.push({
+                    //                 ...obj[key],
+                    //                 user,
+                    //                 messageId: key,
+                    //             })
+                    //         }
+                    //     })
+                    //     .catch(console.error)
                 }
                 callbackFn(arr)
             }

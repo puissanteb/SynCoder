@@ -118,7 +118,7 @@ export default function Chats() {
                                 container
                                 direction="row"
                                 justifyContent="center"
-                                alignItems="center"
+                                aligtems="center"
                             >
                                 <Button
                                     variant="outlined"
