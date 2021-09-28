@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useReducer } from 'react'
 import { Switch, Route, useLocation } from 'react-router-dom'
 import firebase from 'firebase'
 import clsx from 'clsx'
@@ -52,6 +52,22 @@ export default function Main() {
         }
         return 'SynCoder'
     }
+    const [userInfos, updateUserInfos] = useReducer(
+        (state, [userId, value]) => {
+            const obj = { ...state }
+            obj[userId] = value
+            return obj
+        },
+        {}
+    )
+    const [nicknames, updateNicknames] = useReducer(
+        (state, [userId, value]) => {
+            const obj = { ...state }
+            obj[userId] = value
+            return obj
+        },
+        {}
+    )
 
     return (
         <div className={classes.root}>
@@ -124,10 +140,20 @@ export default function Main() {
                             <Groups />
                         </Route>
                         <Route path="/chats" exact>
-                            <Chats />
+                            <Chats
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
+                            />
                         </Route>
                         <Route path="/" exact>
-                            <Timeline />
+                            <Timeline
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
+                            />
                         </Route>
                     </Switch>
                 </Container>

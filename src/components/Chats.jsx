@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import {
     Box,
     Paper,
@@ -44,7 +44,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Chats() {
+export default function Chats({
+    userInfos,
+    updateUserInfos,
+    nicknames,
+    updateNicknames,
+}) {
     const classes = useStyles()
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [selectedChatroomId, setSelectedChatroomId] = useState(null)
@@ -161,6 +166,10 @@ export default function Chats() {
                                 chatroomId={selectedChatroomId}
                                 callbackFn={loadChatrooms}
                                 key={selectedChatroomId}
+                                userInfos={userInfos}
+                                updateUserInfos={updateUserInfos}
+                                nicknames={nicknames}
+                                updateNicknames={updateNicknames}
                             />
                         ) : (
                             <></>

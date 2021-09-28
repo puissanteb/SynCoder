@@ -7,24 +7,13 @@ import Post from './misc/Post'
 import Editor from './misc/Editor'
 import { Grid } from '@material-ui/core'
 
-export default function Timeline() {
+export default function Timeline({
+    userInfos,
+    updateUserInfos,
+    nicknames,
+    updateNicknames,
+}) {
     const [posts, setPosts] = useState([])
-    const [nicknames, updateNicknames] = useReducer(
-        (state, [userId, value]) => {
-            const obj = { ...state }
-            obj[userId] = value
-            return obj
-        },
-        {}
-    )
-    const [userInfos, updateUserInfos] = useReducer(
-        (state, [userId, value]) => {
-            const obj = { ...state }
-            obj[userId] = value
-            return obj
-        },
-        {}
-    )
     const loadPosts = async () => {
         const postsRef = firebase.database().ref(`posts`)
         const followsArr = await getFollowsByUserId(
@@ -41,21 +30,29 @@ export default function Timeline() {
     const loadUserInfos = () => {
         if (posts.length === 0) return
         return Promise.all(
-            posts.map(({ userId }) =>
-                getPhotoURL(userId).then((photoURL) => {
-                    updateUserInfos([userId, photoURL])
-                })
-            )
+            posts
+                .filter(
+                    ({ userId }) => !Object.keys(userInfos).includes(userId)
+                )
+                .map(({ userId }) =>
+                    getPhotoURL(userId).then((photoURL) => {
+                        updateUserInfos([userId, photoURL])
+                    })
+                )
         )
     }
     const loadNicknames = () => {
         if (posts.length === 0) return
         return Promise.all(
-            posts.map(({ userId }) =>
-                getUserNickname(userId).then((nickname) => {
-                    updateNicknames([userId, nickname])
-                })
-            )
+            posts
+                .filter(
+                    ({ userId }) => !Object.keys(nicknames).includes(userId)
+                )
+                .map(({ userId }) =>
+                    getUserNickname(userId).then((nickname) => {
+                        updateNicknames([userId, nickname])
+                    })
+                )
         )
     }
     useEffect(loadPosts, [])

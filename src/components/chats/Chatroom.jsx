@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import {
     Paper,
@@ -58,7 +58,14 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
+export default function Chatroom({
+    chatroomId,
+    userInfos,
+    updateUserInfos,
+    nicknames,
+    updateNicknames,
+    callbackFn = (f) => f,
+}) {
     const classes = useStyles()
     const [addMemberOpen, setAddMemberOpen] = useState(false)
     const [currentMemberOpen, setCurrentMemberOpen] = useState(false)
@@ -69,22 +76,6 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
     const [messages, setMessages] = useState([])
     const [members, setMembers] = useState([])
     const [friends, setFriends] = useState([])
-    const [userInfos, updateUserInfos] = useReducer(
-        (state, [userId, value]) => {
-            const obj = { ...state }
-            obj[userId] = value
-            return obj
-        },
-        {}
-    )
-    const [nicknames, updateNicknames] = useReducer(
-        (state, [userId, value]) => {
-            const obj = { ...state }
-            obj[userId] = value
-            return obj
-        },
-        {}
-    )
     const loadMessages = () => {
         const messagesRef = firebase
             .database()
@@ -101,21 +92,29 @@ export default function Chatroom({ chatroomId, callbackFn = (f) => f }) {
     const loadUserInfos = () => {
         if (members.length === 0) return
         return Promise.all(
-            members.map((memberId) =>
-                getPhotoURL(memberId).then((photoURL) => {
-                    updateUserInfos([memberId, photoURL])
-                })
-            )
+            members
+                .filter(
+                    (memberId) => !Object.keys(userInfos).includes(memberId)
+                )
+                .map((memberId) =>
+                    getPhotoURL(memberId).then((photoURL) => {
+                        updateUserInfos([memberId, photoURL])
+                    })
+                )
         )
     }
     const loadNicknames = () => {
         if (members.length === 0) return
         return Promise.all(
-            members.map((memberId) =>
-                getUserNickname(memberId).then((nickname) => {
-                    updateNicknames([memberId, nickname])
-                })
-            )
+            members
+                .filter(
+                    (memberId) => !Object.keys(nicknames).includes(memberId)
+                )
+                .map((memberId) =>
+                    getUserNickname(memberId).then((nickname) => {
+                        updateNicknames([memberId, nickname])
+                    })
+                )
         )
     }
     const loadFriends = () =>
