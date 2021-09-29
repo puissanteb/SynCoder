@@ -24,12 +24,12 @@ export default function Groups() {
     const submitGroup = (title, description) => {
         setLoading(true)
         addGroup(title, description)
+            .then(handleClose)
             .then(() => setLoading(false))
             .then(loadGroups)
             .catch(console.error)
     }
     useEffect(loadGroups, [])
-
     return (
         <>
             <CustomDialog

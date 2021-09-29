@@ -82,6 +82,9 @@ export default function Main() {
         },
         {}
     )
+
+    const props = { userInfos, updateUserInfos, nicknames, updateNicknames }
+
     useEffect(() => {
         getTitle(location.pathname).then(setTitle).catch(console.error)
     }, [location.pathname])
@@ -151,44 +154,19 @@ export default function Main() {
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
                         <Route path="/friends" exact>
-                            <Friends
-                                userInfos={userInfos}
-                                updateUserInfos={updateUserInfos}
-                                nicknames={nicknames}
-                                updateNicknames={updateNicknames}
-                            />
+                            <Friends {...props} />
                         </Route>
                         <Route path="/groups" exact>
-                            <Groups
-                                userInfos={userInfos}
-                                updateUserInfos={updateUserInfos}
-                                nicknames={nicknames}
-                                updateNicknames={updateNicknames}
-                            />
+                            <Groups {...props} />
                         </Route>
                         <Route path="/groups/:groupId">
-                            <Timeline
-                                userInfos={userInfos}
-                                updateUserInfos={updateUserInfos}
-                                nicknames={nicknames}
-                                updateNicknames={updateNicknames}
-                            />
+                            <Timeline {...props} />
                         </Route>
                         <Route path="/chats" exact>
-                            <Chats
-                                userInfos={userInfos}
-                                updateUserInfos={updateUserInfos}
-                                nicknames={nicknames}
-                                updateNicknames={updateNicknames}
-                            />
+                            <Chats {...props} />
                         </Route>
                         <Route path="/timeline" exact>
-                            <Timeline
-                                userInfos={userInfos}
-                                updateUserInfos={updateUserInfos}
-                                nicknames={nicknames}
-                                updateNicknames={updateNicknames}
-                            />
+                            <Timeline {...props} />
                         </Route>
                         <Redirect from="/" to="/timeline" />
                     </Switch>
