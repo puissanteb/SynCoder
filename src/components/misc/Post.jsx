@@ -6,47 +6,46 @@ import Reply from './Reply'
 import Editor from './Editor'
 import Likes from './Likes'
 import { Typography, Avatar, Container } from '@material-ui/core'
-import { getUserNickname, getPhotoURL } from '../api/users'
-import { getReplies } from '../api/replies'
-import { formatDate } from '../utils/utils'
+import { getGroupInfo } from '../../api/groups'
+import { getReplies } from '../../api/replies'
 
 export default function Post({
     postId,
     userId,
+    groupId,
     modifiedAt,
     body,
+    photoURL,
+    nickname,
     callbackFn = (f) => f,
 }) {
-    const [nickname, setNickname] = useState('')
     const [replies, setReplies] = useState([])
-    const [photoURL, setPhotoURL] = useState('')
+    const [groupTitle, setGroupTitle] = useState(``)
     const loadReplies = () =>
         getReplies(postId).then(setReplies).catch(console.error)
-    useEffect(() => {
-        Promise.all([
-            getUserNickname(userId).then(setNickname).catch(console.error),
-            getReplies(postId).then(setReplies).catch(console.error),
-            getPhotoURL(userId).then(setPhotoURL).catch(console.error),
-        ])
-    }, [])
+    const loadGroupTitle = () =>
+        getGroupInfo(groupId)
+            .then(({ title }) => setGroupTitle(title))
+            .catch(console.error)
+    useEffect(loadReplies, [])
+    useEffect(loadGroupTitle, [])
     return (
         <Grid item xs={12} md={8} lg={9}>
             <Paper>
                 <Container style={{ display: 'flex' }}>
                     <Avatar alt={nickname} src={photoURL}></Avatar>
                     <Title>
-                        {nickname}/
-                        {formatDate(new Date(modifiedAt), new Date())}
+                        {nickname}
+                        {groupId ? `(${groupTitle})` : ``}
                     </Title>
                 </Container>
                 <Container>
-                    <Typography component="h3" color="secondary">
-                        {body}
-                    </Typography>
+                    <Typography component="h3">{body}</Typography>
                 </Container>
                 <Container>
                     <Likes
                         postId={postId}
+                        modifiedAt={modifiedAt}
                         authorId={userId}
                         callbackFn={callbackFn}
                     />

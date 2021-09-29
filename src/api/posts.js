@@ -1,40 +1,105 @@
 import firebase from 'firebase'
 
-export async function getPosts() {
-    const postsRef = firebase.database().ref(`posts`)
-    try {
-        const snapshot = await postsRef.get()
-        if (snapshot.exists()) {
-            const obj = snapshot.val()
-            const arr = []
-            for (let key in obj) {
-                arr.push({ ...obj[key], postId: key })
+export function addPostListener(
+    ref,
+    userId,
+    followsArr,
+    callbackFn = (f) => f
+) {
+    return ref.on(
+        'value',
+        (snapshot) => {
+            if (snapshot.exists()) {
+                const obj = snapshot.val()
+                const arr = []
+                for (let key in obj) {
+                    const authorId = obj[key].userId
+                    if (authorId === userId || followsArr.includes(authorId))
+                        arr.push({
+                            ...obj[key],
+                            postId: key,
+                        })
+                    // const authorId = obj[key].userId
+                    // firebase
+                    //     .database()
+                    //     .ref(`users/${authorId}`)
+                    //     .get()
+                    //     .then((res) => {
+                    //         if (
+                    //             res.exists() &&
+                    //             (authorId === userId ||
+                    //                 followsArr.includes(authorId))
+                    //         ) {
+                    //             const user = res.val()
+                    //             arr.push({
+                    //                 ...obj[key],
+                    //                 user,
+                    //                 postId: key,
+                    //             })
+                    //         }
+                    //     })
+                    //     .catch(console.error)
+                }
+                arr.sort(
+                    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                )
+                callbackFn(arr)
             }
-            arr.sort(
-                (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
-            )
-            return arr
-        } else {
-            return []
-        }
-    } catch (message) {
-        return console.error(message)
-    }
-    // postsRef.on('child_added', (snapshot) => {
-    //     if (snapshot.exists()) {
-    //         console.log(snapshot.val())
-    //     } else {
-    //         console.log('No data available')
-    //     }
-    // })
+        },
+        (error) => console.error(error)
+    )
 }
 
-export function addPost(userId, body) {
+export function addGroupPostListener(ref, callbackFn = (f) => f) {
+    return ref.on(
+        'value',
+        (snapshot) => {
+            if (snapshot.exists()) {
+                const obj = snapshot.val()
+                const arr = []
+                for (let key in obj) {
+                    arr.push({
+                        ...obj[key],
+                        postId: key,
+                    })
+                    // const authorId = obj[key].userId
+                    // firebase
+                    //     .database()
+                    //     .ref(`users/${authorId}`)
+                    //     .get()
+                    //     .then((res) => {
+                    //         if (
+                    //             res.exists() &&
+                    //             (authorId === userId ||
+                    //                 followsArr.includes(authorId))
+                    //         ) {
+                    //             const user = res.val()
+                    //             arr.push({
+                    //                 ...obj[key],
+                    //                 user,
+                    //                 postId: key,
+                    //             })
+                    //         }
+                    //     })
+                    //     .catch(console.error)
+                }
+                arr.sort(
+                    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                )
+                callbackFn(arr)
+            }
+        },
+        (error) => console.error(error)
+    )
+}
+
+export function addPost(userId, body, groupId = ``) {
     const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
     const newPostKey = firebase.database().ref(`posts`).push().key
     return firebase.database().ref(`posts/${newPostKey}`).set({
         userId,
         body,
+        groupId,
         createdAt: now,
         modifiedAt: now,
     })

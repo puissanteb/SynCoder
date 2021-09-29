@@ -1,5 +1,19 @@
 import firebase from 'firebase'
 
+export async function getUsers() {
+    const usersRef = firebase.database().ref(`users`)
+    try {
+        const snapshot = await usersRef.get()
+        if (snapshot.exists()) {
+            return Object.keys(snapshot.val())
+        } else {
+            return []
+        }
+    } catch (message) {
+        return console.error(message)
+    }
+}
+
 export async function getUserNickname(userId) {
     const usersRef = firebase.database().ref(`users/${userId}`)
     try {
@@ -9,6 +23,15 @@ export async function getUserNickname(userId) {
         } else {
             return '이름 없음'
         }
+    } catch (message) {
+        return console.error(message)
+    }
+}
+
+export async function getPhotoURL(userId) {
+    const imageRef = firebase.storage().ref(`images/temp/${userId}.jpg`)
+    try {
+        return imageRef.getDownloadURL()
     } catch (message) {
         return console.error(message)
     }
@@ -30,13 +53,4 @@ export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
             return true
         })
         .catch(console.error)
-}
-
-export async function getPhotoURL(userId) {
-    const imageRef = firebase.storage().ref().child(`images/temp/${userId}.jpg`)
-    try {
-        return imageRef.getDownloadURL()
-    } catch (message) {
-        return console.error(message)
-    }
 }

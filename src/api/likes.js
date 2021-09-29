@@ -23,6 +23,16 @@ export function getLikes(postId) {
     })
 }
 
+export function addLike(userId, postId) {
+    const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
+    const newLikeKey = firebase.database().ref(`likes`).push().key
+    return firebase.database().ref(`likes/${newLikeKey}`).set({
+        userId,
+        postId,
+        createdAt: now,
+    })
+}
+
 export function cancelLike(userId, postId) {
     const likesRef = firebase
         .database()
@@ -48,15 +58,5 @@ export function cancelLike(userId, postId) {
             },
             (error) => reject(error)
         )
-    })
-}
-
-export function addLike(userId, postId) {
-    const now = JSON.stringify(new Date()).replaceAll(`"`, ``)
-    const newLikeKey = firebase.database().ref(`likes`).push().key
-    return firebase.database().ref(`likes/${newLikeKey}`).set({
-        userId,
-        postId,
-        createdAt: now,
     })
 }
