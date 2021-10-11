@@ -37,7 +37,30 @@ export async function getPhotoURL(userId) {
     }
 }
 
-export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
+export async function getUserDescription(userId) {
+    const usersRef = firebase.database().ref(`users/${userId}`)
+    try {
+        const snapshot = await usersRef.get()
+        if (snapshot.exists()) {
+            return snapshot.val().description ?? '자기소개가 없습니다.'
+        } else {
+            return '자기소개가 없습니다.'
+        }
+    } catch (message) {
+        return console.error(message)
+    }
+}
+
+export function saveUserInfo(
+    {
+        userId,
+        nickname,
+        email,
+        mobile = `010-0000-0000`,
+        description = `자기소개가 없습니다.`,
+    },
+    isSignIn
+) {
     const usersRef = firebase.database().ref(`users/${userId}`)
     usersRef
         .get()
@@ -48,6 +71,7 @@ export function saveUserInfo({ userId, nickname, email, mobile }, isSignIn) {
                     nickname,
                     email,
                     mobile,
+                    description,
                 })
             }
             return true

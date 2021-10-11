@@ -20,6 +20,7 @@ export default function Preferences({ user }) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [nickname, setNickname] = useState(``)
+    const [description, setDescription] = useState(``)
     const [phoneNumber, setPhoneNumber] = useState(``)
     const handleOpen = () => setOpen(true)
     const handleClose = () => setOpen(false)
@@ -40,6 +41,7 @@ export default function Preferences({ user }) {
                 nickname,
                 email,
                 mobile: phoneNumber,
+                description,
             },
             false
         )
@@ -77,13 +79,19 @@ export default function Preferences({ user }) {
                     />
                     <TextField
                         margin="dense"
-                        id="standard-required"
+                        label="소개"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        type="text"
+                        fullWidth
+                    />
+                    <TextField
+                        margin="dense"
                         label="휴대폰 번호"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         type="tel"
                         fullWidth
-                        required
                     />
                     <TextField
                         margin="dense"
@@ -103,7 +111,7 @@ export default function Preferences({ user }) {
                     <Button
                         onClick={saveChanges}
                         color="primary"
-                        disabled={loading || !nickname || !phoneNumber}
+                        disabled={loading || !nickname}
                     >
                         확인
                     </Button>

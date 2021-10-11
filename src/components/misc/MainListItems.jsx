@@ -12,7 +12,7 @@ export default function MainListItems() {
                 </ListItemIcon>
                 <ListItemText primary="타임라인" />
             </ListItem>
-            <ListItem button component={RouterLink} to="/friends">
+            <ListItem button component={RouterLink} to="/users">
                 <ListItemIcon>
                     <GroupAdd />
                 </ListItemIcon>

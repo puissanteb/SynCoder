@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import {
     ListItem,
     IconButton,
@@ -6,7 +7,7 @@ import {
     Avatar,
     ListItemText,
 } from '@material-ui/core'
-import { Add, Check } from '@material-ui/icons'
+import { Add, Check, ArrowForward } from '@material-ui/icons'
 import { followUser, unfollowUser } from '../../api/follows'
 import firebase from 'firebase'
 
@@ -49,6 +50,11 @@ export default function FriendsListItem({
                     <Add />
                 )}
             </IconButton>
+            <RouterLink to={`/users/${userId}`}>
+                <IconButton edge="end" aria-label="link">
+                    <ArrowForward />
+                </IconButton>
+            </RouterLink>
         </ListItem>
     )
 }

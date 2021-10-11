@@ -14,7 +14,10 @@ export function addPostListener(
                 const arr = []
                 for (let key in obj) {
                     const authorId = obj[key].userId
-                    if (authorId === userId || followsArr.includes(authorId))
+                    if (
+                        !obj[key].groupId &&
+                        (authorId === userId || followsArr.includes(authorId))
+                    )
                         arr.push({
                             ...obj[key],
                             postId: key,
@@ -82,6 +85,31 @@ export function addGroupPostListener(ref, callbackFn = (f) => f) {
                     //         }
                     //     })
                     //     .catch(console.error)
+                }
+                arr.sort(
+                    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                )
+                callbackFn(arr)
+            }
+        },
+        (error) => console.error(error)
+    )
+}
+
+export function addUserPostListener(ref, callbackFn = (f) => f) {
+    return ref.on(
+        'value',
+        (snapshot) => {
+            if (snapshot.exists()) {
+                const obj = snapshot.val()
+                const arr = []
+                for (let key in obj) {
+                    if (!obj[key].groupId) {
+                        arr.push({
+                            ...obj[key],
+                            postId: key,
+                        })
+                    }
                 }
                 arr.sort(
                     (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)

@@ -19,6 +19,7 @@ import {
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons'
 import MainListItems from './misc/MainListItems'
 import { getGroupInfo } from '../api/groups'
+import { getUserNickname } from '../api/users'
 import styles from '../utils/useStyles'
 import { Copyright } from '../utils/utils'
 import Preferences from './misc/Preferences'
@@ -26,6 +27,7 @@ import Timeline from './Timeline'
 import Friends from './Friends'
 import Groups from './Groups'
 import Chats from './Chats'
+import Profile from './Profile'
 
 const useStyles = makeStyles(styles())
 
@@ -43,7 +45,7 @@ export default function Main() {
     const getTitle = (pathname) => {
         return new Promise((resolve, reject) => {
             switch (pathname) {
-                case '/friends':
+                case '/users':
                     resolve('친구')
                     break
                 case '/groups':
@@ -62,6 +64,8 @@ export default function Main() {
                                 ({ title }) => title
                             )
                         )
+                    if (pathname.startsWith('/users'))
+                        resolve(getUserNickname(pathname.slice(7)))
             }
             resolve('SynCoder')
         })
@@ -153,8 +157,11 @@ export default function Main() {
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
-                        <Route path="/friends" exact>
+                        <Route path="/users" exact>
                             <Friends {...props} />
+                        </Route>
+                        <Route path="/users/:userId">
+                            <Profile {...props} />
                         </Route>
                         <Route path="/groups" exact>
                             <Groups {...props} />
